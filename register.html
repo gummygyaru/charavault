@@ -14,35 +14,37 @@
   <p id="message"></p>
 
   <!-- This is your Firebase login magic 👇 -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
-      authDomain: "charavault-e8cf5.firebaseapp.com",
-      projectId: "charavault-e8cf5",
-      storageBucket: "charavault-e8cf5.firebasestorage.app",
-      messagingSenderId: "385710051091",
-      appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
-      measurementId: "G-JNLB26DXJC"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
+    authDomain: "charavault-e8cf5.firebaseapp.com",
+    projectId: "charavault-e8cf5",
+    storageBucket: "charavault-e8cf5.firebasestorage.app",
+    messagingSenderId: "385710051091",
+    appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
+    measurementId: "G-JNLB26DXJC"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-    document.getElementById("register-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("register-email").value;
-      const password = document.getElementById("register-password").value;
+  document.getElementById("register-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("register-email").value;
+    const password = document.getElementById("register-password").value;
 
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        document.getElementById("message").textContent = "🎉 Account created!";
-      } catch (error) {
-        document.getElementById("message").textContent = "⚠️ " + error.message;
-      }
-    });
-  </script>
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      const user = auth.currentUser;
+      await sendEmailVerification(user);
+      document.getElementById("message").textContent = "🎉 Account created! Verification email sent — please check your inbox.";
+    } catch (error) {
+      document.getElementById("message").textContent = "⚠️ " + error.message;
+    }
+  });
+</script>
 </body>
 </html>
