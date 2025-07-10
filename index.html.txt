@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>chara.vault</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>chara.<span class="vault">vault</span></h1>
+    <p>A place to store your characters ✨</p>
+  </header>
+
+  <main>
+    <section class="character-card">
+      <h2>💫 Example Character</h2>
+      <img src="https://placekitten.com/200/200" alt="Character" />
+      <p><strong>Name:</strong> Cookie</p>
+      <p><strong>Description:</strong> A very magical cat who eats dreams.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 chara.vault</p>
+  </footer>
+</body>
+</html>
