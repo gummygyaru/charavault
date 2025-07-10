@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="stylesheet" href="style.css" />
   <meta charset="UTF-8" />
   <title>Register for chara.vault</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h2>Register</h2>
@@ -35,6 +35,7 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const messageEl = document.getElementById("message");
 
     document
       .getElementById("register-form")
@@ -47,10 +48,12 @@
           await createUserWithEmailAndPassword(auth, email, password);
           const user = auth.currentUser;
           await sendEmailVerification(user);
-          document.getElementById("message").textContent =
+          messageEl.textContent =
             "🎉 Account created! Verification email sent — please check your inbox.";
+          messageEl.classList.add("success");
         } catch (error) {
-          document.getElementById("message").textContent = "⚠️ " + error.message;
+          messageEl.textContent = "⚠️ " + error.message;
+          messageEl.classList.remove("success");
         }
       });
   </script>
