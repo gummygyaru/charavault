@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="stylesheet" href="style.css" />
   <meta charset="UTF-8" />
   <title>Login to chara.vault</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h2>Login</h2>
@@ -31,6 +31,7 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const messageEl = document.getElementById("message");
 
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -49,10 +50,12 @@
           return;
         }
 
-        document.getElementById("message").textContent = "🎉 Logged in!";
+        messageEl.textContent = "🎉 Logged in!";
+        messageEl.classList.add("success");
         // TODO: redirect to dashboard or main site page here
       } catch (error) {
-        document.getElementById("message").textContent = "⚠️ " + error.message;
+        messageEl.textContent = "⚠️ " + error.message;
+        messageEl.classList.remove("success");
       }
     });
   </script>
