@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard - chara.vault</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f0f4f8;
+    }
+
+    header {
+      background-color: #3b82f6;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+    }
+
+    .dashboard {
+      display: flex;
+    }
+
+    aside {
+      width: 250px;
+      background: white;
+      padding: 1rem;
+      border-right: 1px solid #ddd;
+      height: calc(100vh - 72px);
+      overflow-y: auto;
+    }
+
+    aside h2 {
+      font-size: 1rem;
+      margin-top: 1.5rem;
+      color: #666;
+    }
+
+    aside ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    aside ul li {
+      margin: 0.5rem 0;
+    }
+
+    aside ul li a {
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    aside ul li a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      flex-grow: 1;
+      padding: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .info-box {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+    }
+
+    .info-box p {
+      margin: 0.5rem 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>chara.<span class="vault">vault</span></h1>
+    <div id="usernameDisplay">Loading…</div>
+  </header>
+
+  <div class="dashboard">
+    <aside>
+      <h2>Profile</h2>
+      <ul>
+        <li><a href="#">Settings</a></li>
+        <li><a href="#">Profile Content</a></li>
+        <li><a href="#">CSS & Blurbs</a></li>
+      </ul>
+
+      <h2>Characters</h2>
+      <ul>
+        <li><a href="#">Character Settings</a></li>
+        <li><a href="#">Design Manager</a></li>
+        <li><a href="#">Image Manager</a></li>
+      </ul>
+
+      <h2>Interactions</h2>
+      <ul>
+        <li><a href="#">Subscribers</a></li>
+        <li><a href="#">Favorites</a></li>
+      </ul>
+
+      <h2>Account</h2>
+      <ul>
+        <li><a href="#">Email</a></li>
+        <li><a href="#">DOB</a></li>
+        <li><a href="#">Avatar</a></li>
+      </ul>
+    </aside>
+
+    <main>
+      <div class="section-title">Welcome to your Dashboard</div>
+
+      <div class="info-box">
+        <p><strong>Username:</strong> <span id="username">shimura</span></p>
+        <p><strong>Email:</strong> <span id="email">example@email.com</span></p>
+        <p><strong>Last Login:</strong> <span id="lastLogin">loading...</span></p>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
+      authDomain: "charavault-e8cf5.firebaseapp.com",
+      projectId: "charavault-e8cf5",
+      storageBucket: "charavault-e8cf5.firebasestorage.app",
+      messagingSenderId: "385710051091",
+      appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
+      measurementId: "G-JNLB26DXJC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById("username").textContent = user.displayName || "shimura";
+        document.getElementById("email").textContent = user.email;
+        document.getElementById("lastLogin").textContent = user.metadata.lastSignInTime;
+        document.getElementById("usernameDisplay").textContent = user.displayName || user.email;
+      } else {
+        window.location.href = "login.html"; // kick to login if not signed in
+      }
+    });
+  </script>
+</body>
+</html>
