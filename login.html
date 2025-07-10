@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login to chara.vault</title>
+</head>
+<body>
+  <h2>Login</h2>
+  <form id="login-form">
+    <input type="email" id="login-email" placeholder="Email" required><br>
+    <input type="password" id="login-password" placeholder="Password" required><br>
+    <button type="submit">Log In</button>
+  </form>
+
+  <p id="message"></p>
+
+  <!-- Firebase login code -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
+      authDomain: "charavault-e8cf5.firebaseapp.com",
+      projectId: "charavault-e8cf5",
+      storageBucket: "charavault-e8cf5.firebasestorage.app",
+      messagingSenderId: "385710051091",
+      appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
+      measurementId: "G-JNLB26DXJC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        document.getElementById("message").textContent = "🎉 Logged in!";
+        // TODO: redirect or show the user dashboard
+      } catch (error) {
+        document.getElementById("message").textContent = "⚠️ " + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
