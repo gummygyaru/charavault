@@ -2,27 +2,71 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>chara.vault</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Extra styles just for the index page */
+    body {
+      flex-direction: column;
+      text-align: center;
+      padding-top: 5rem;
+      background: #f0f4f8;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: start;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      color: #333;
+    }
+    p.beta-msg {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 3rem;
+      color: #666;
+    }
+    .btn-container {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 400px;
+      width: 100%;
+    }
+    .btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.25s ease;
+      flex: 1 1 120px;
+      text-decoration: none;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .btn:hover {
+      background: #2563eb;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>chara.<span class="vault">vault</span></h1>
-    <p>A place to store your characters ✨</p>
-  </header>
+  <h1>chara.vault</h1>
+  <p class="beta-msg">… is in invite beta? Check back later!</p>
 
-  <main>
-    <section class="character-card">
-      <h2>💫 Example Character</h2>
-      <img src="https://placekitten.com/200/200" alt="Character" />
-      <p><strong>Name:</strong> Cookie</p>
-      <p><strong>Description:</strong> A very magical cat who eats dreams.</p>
-    </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2025 chara.vault</p>
-  </footer>
+  <div class="btn-container">
+    <a href="trending.html" class="btn">Check out site</a>
+    <a href="login.html" class="btn">Login</a>
+    <a href="register.html" class="btn">Register</a>
+  </div>
 </body>
 </html>
