@@ -13,9 +13,11 @@
       align-items: center;
       padding-top: 80px;
     }
+
     h2 {
       color: #3b82f6;
     }
+
     form {
       background: white;
       padding: 2rem;
@@ -25,12 +27,23 @@
       display: flex;
       flex-direction: column;
     }
+
     input {
       padding: 10px;
       margin-bottom: 1rem;
       border: 1px solid #ccc;
       border-radius: 6px;
     }
+
+    label {
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #444;
+    }
+
     button {
       background: #3b82f6;
       color: white;
@@ -40,31 +53,59 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     button:hover {
       background: #2563eb;
     }
+
     #message {
       margin-top: 1rem;
       color: #e11d48;
     }
+
     #message.success {
       color: #10b981;
+    }
+
+    .link {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .link a {
+      color: #9333ea;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .link a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
   <h2>Login to chara.<span style="color:#9333ea;">vault</span></h2>
+
   <form id="login-form">
     <input type="email" id="login-email" placeholder="Email" required />
     <input type="password" id="login-password" placeholder="Password" required />
+    <label><input type="checkbox" id="stay-signed-in" /> Stay signed in?</label>
     <button type="submit">Log In</button>
   </form>
 
   <p id="message"></p>
+  <p class="link">Don't have an account? <a href="register.html">Register</a></p>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import {
+      getAuth,
+      setPersistence,
+      browserLocalPersistence,
+      browserSessionPersistence,
+      signInWithEmailAndPassword,
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
@@ -84,23 +125,18 @@
       e.preventDefault();
       const email = document.getElementById("login-email").value;
       const password = document.getElementById("login-password").value;
+      const staySignedIn = document.getElementById("stay-signed-in").checked;
 
       try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+        // Set persistence based on checkbox
+        await setPersistence(auth, staySignedIn ? browserLocalPersistence : browserSessionPersistence);
 
-        if (!user.emailVerified) {
-          alert("⚠️ Please verify your email before logging in! Check your inbox.");
-          await auth.signOut();
-          return;
-        }
-
+        await signInWithEmailAndPassword(auth, email, password);
         messageEl.textContent = "🎉 Logged in!";
         messageEl.classList.add("success");
 
-        // ✅ Redirect to dashboard
+        // Redirect to dashboard
         window.location.href = "dashboard.html";
-
       } catch (error) {
         messageEl.textContent = "⚠️ " + error.message;
         messageEl.classList.remove("success");
