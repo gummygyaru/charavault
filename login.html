@@ -4,12 +4,59 @@
   <meta charset="UTF-8" />
   <title>Login to chara.vault</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f4f4f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 80px;
+    }
+    h2 {
+      color: #3b82f6;
+    }
+    form {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+    }
+    input {
+      padding: 10px;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      background: #3b82f6;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    #message {
+      margin-top: 1rem;
+      color: #e11d48;
+    }
+    #message.success {
+      color: #10b981;
+    }
+  </style>
 </head>
 <body>
-  <h2>Login</h2>
+  <h2>Login to chara.<span style="color:#9333ea;">vault</span></h2>
   <form id="login-form">
-    <input type="email" id="login-email" placeholder="Email" required /><br />
-    <input type="password" id="login-password" placeholder="Password" required /><br />
+    <input type="email" id="login-email" placeholder="Email" required />
+    <input type="password" id="login-password" placeholder="Password" required />
     <button type="submit">Log In</button>
   </form>
 
@@ -43,16 +90,17 @@
         const user = userCredential.user;
 
         if (!user.emailVerified) {
-          alert(
-            "⚠️ Please verify your email before logging in! Check your inbox."
-          );
+          alert("⚠️ Please verify your email before logging in! Check your inbox.");
           await auth.signOut();
           return;
         }
 
         messageEl.textContent = "🎉 Logged in!";
         messageEl.classList.add("success");
-        // TODO: redirect to dashboard or main site page here
+
+        // ✅ Redirect to dashboard
+        window.location.href = "dashboard.html";
+
       } catch (error) {
         messageEl.textContent = "⚠️ " + error.message;
         messageEl.classList.remove("success");
