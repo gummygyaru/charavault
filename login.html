@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Login to chara.vault</title>
 </head>
 <body>
   <h2>Login</h2>
   <form id="login-form">
-    <input type="email" id="login-email" placeholder="Email" required><br>
-    <input type="password" id="login-password" placeholder="Password" required><br>
+    <input type="email" id="login-email" placeholder="Email" required /><br />
+    <input type="password" id="login-password" placeholder="Password" required /><br />
     <button type="submit">Log In</button>
   </form>
 
   <p id="message"></p>
 
-  <!-- Firebase login code -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
@@ -25,7 +25,7 @@
       storageBucket: "charavault-e8cf5.firebasestorage.app",
       messagingSenderId: "385710051091",
       appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
-      measurementId: "G-JNLB26DXJC"
+      measurementId: "G-JNLB26DXJC",
     };
 
     const app = initializeApp(firebaseConfig);
@@ -37,9 +37,19 @@
       const password = document.getElementById("login-password").value;
 
       try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        if (!user.emailVerified) {
+          alert(
+            "⚠️ Please verify your email before logging in! Check your inbox."
+          );
+          await auth.signOut();
+          return;
+        }
+
         document.getElementById("message").textContent = "🎉 Logged in!";
-        // TODO: redirect or show the user dashboard
+        // TODO: redirect to dashboard or main site page here
       } catch (error) {
         document.getElementById("message").textContent = "⚠️ " + error.message;
       }
