@@ -4,12 +4,66 @@
   <meta charset="UTF-8" />
   <title>Register for chara.vault</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f4f4f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 80px;
+    }
+
+    h2 {
+      color: #9333ea;
+    }
+
+    form {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    input {
+      padding: 10px;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      background: #9333ea;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #7e22ce;
+    }
+
+    #message {
+      margin-top: 1rem;
+      color: #e11d48;
+    }
+
+    #message.success {
+      color: #10b981;
+    }
+  </style>
 </head>
 <body>
-  <h2>Register</h2>
+  <h2>Register for chara.<span style="color:#3b82f6;">vault</span></h2>
   <form id="register-form">
-    <input type="email" id="register-email" placeholder="Email" required /><br />
-    <input type="password" id="register-password" placeholder="Password" required /><br />
+    <input type="email" id="register-email" placeholder="Email" required />
+    <input type="password" id="register-password" placeholder="Password" required />
     <button type="submit">Create Account</button>
   </form>
 
@@ -37,25 +91,30 @@
     const auth = getAuth(app);
     const messageEl = document.getElementById("message");
 
-    document
-      .getElementById("register-form")
-      .addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const email = document.getElementById("register-email").value;
-        const password = document.getElementById("register-password").value;
+    document.getElementById("register-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("register-email").value;
+      const password = document.getElementById("register-password").value;
 
-        try {
-          await createUserWithEmailAndPassword(auth, email, password);
-          const user = auth.currentUser;
-          await sendEmailVerification(user);
-          messageEl.textContent =
-            "🎉 Account created! Verification email sent — please check your inbox.";
-          messageEl.classList.add("success");
-        } catch (error) {
-          messageEl.textContent = "⚠️ " + error.message;
-          messageEl.classList.remove("success");
-        }
-      });
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // ✅ Send verification email
+        await sendEmailVerification(user);
+
+        messageEl.textContent = "🎉 Account created! Verification email sent. Please check your inbox.";
+        messageEl.classList.add("success");
+
+        // Optional: redirect to login page after 4 seconds
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 4000);
+      } catch (error) {
+        messageEl.textContent = "⚠️ " + error.message;
+        messageEl.classList.remove("success");
+      }
+    });
   </script>
 </body>
 </html>
