@@ -301,20 +301,14 @@
     `;
 
     const cssBlurbsHTML = `
-      <div class="css-blurbs">
-        <h1>Edit Profile</h1>
-        <p>What the fuck.</p>
-
-        <label for="profile-html">Your Profile HTML</label>
-        <textarea id="profile-html" placeholder="Paste your HTML here..."></textarea>
-
-        <button class="btn-save" onclick="updatePreview()">Preview</button>
-
-        <div class="preview-box mt-4">
-          <h5>Live Preview</h5>
-          <div id="profile-preview" style="padding: 1rem; border-top: 1px solid #ccc;"></div>
-        </div>
-      </div>
+      <div class="profile-blurb-container">
+        <h1>Profile Blurb</h1>
+        <p>This HTML will be added to the sidebar of all your public user pages.</p>
+        <textarea id="profile-blurb-html" placeholder="Enter sidebar HTML here..." rows="10" style="width: 100%;"></textarea>
+        <button class="btn-save" id="save-profile-blurb">Save</button>
+        <div id="profile-blurb-message"></div>
+    </div>
+`;
     `;
     // Placeholder for other pages - update the profile-content entry with the full profile editor HTML
     const pagePlaceholders = {
