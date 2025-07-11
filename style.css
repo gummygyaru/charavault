@@ -32,3 +32,42 @@ img {
   height: 200px;
   object-fit: cover;
 }
+
+body.theme-dark {
+  background: #1a1a1a;
+  color: #f5f5f5;
+}
+body.theme-dark aside {
+  background: #222;
+  border-right: 1px solid #444;
+}
+body.theme-dark aside h2,
+body.theme-dark aside ul li a {
+  color: #bbb;
+}
+body.theme-dark main,
+body.theme-dark .info-box {
+  background: #2a2a2a;
+  color: #eee;
+}
+
+body.theme-synthwave {
+  background: #1f0033;
+  color: #f0f;
+}
+body.theme-synthwave aside {
+  background: #33004d;
+  border-right: 1px solid #6600cc;
+}
+body.theme-synthwave main,
+body.theme-synthwave .info-box {
+  background: #2a004d;
+  color: #ff99ff;
+}
+body.theme-synthwave a {
+  color: #ff77ff;
+}
+body.theme-synthwave button {
+  background: #cc00ff;
+}
+
