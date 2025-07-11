@@ -85,6 +85,13 @@
       sendEmailVerification,
     } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      serverTimestamp,
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
       authDomain: "charavault-e8cf5.firebaseapp.com",
@@ -97,29 +104,42 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
     const messageEl = document.getElementById("message");
     const spamNote = document.getElementById("spam-note");
 
     document.getElementById("register-form").addEventListener("submit", async (e) => {
       e.preventDefault();
+
       const email = document.getElementById("register-email").value;
       const password = document.getElementById("register-password").value;
 
       try {
+        // 1. Create user with email & password
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // ✅ Send verification email
+        // 2. Send verification email to user
         await sendEmailVerification(user);
+
+        // 3. Create a new document in Firestore "users" collection using user.uid as the document ID
+        await setDoc(doc(db, "users", user.uid), {
+          email: user.email,
+          username: email.split("@")[0].toLowerCase(), // default username: part before '@' lowercase
+          bio: "",        // empty bio to fill later
+          avatarUrl: "",  // empty avatar to fill later
+          createdAt: serverTimestamp(), // timestamp for account creation time
+        });
 
         messageEl.textContent = "🎉 Account created! Verification email sent. Please check your inbox.";
         messageEl.classList.add("success");
         spamNote.style.display = "block";
 
-        // Optional: redirect to login page after 4 seconds
+        // Redirect to login page after 4 seconds
         setTimeout(() => {
           window.location.href = "login.html";
         }, 4000);
+
       } catch (error) {
         messageEl.textContent = "⚠️ " + error.message;
         messageEl.classList.remove("success");
