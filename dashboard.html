@@ -218,4 +218,87 @@
       projectId: "charavault-e8cf5",
       storageBucket: "charavault-e8cf5.firebasestorage.app",
       messagingSenderId: "385710051091",
-      appId: "1:385710051
+      appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
+      measurementId: "G-JNLB26DXJC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const mainContent = document.getElementById("main-content");
+    const usernameDisplay = document.getElementById("usernameDisplay");
+    const usernameSpan = document.getElementById("username");
+    const emailSpan = document.getElementById("email");
+    const lastLoginSpan = document.getElementById("lastLogin");
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        usernameSpan.textContent = user.displayName || "shimura";
+        emailSpan.textContent = user.email;
+        lastLoginSpan.textContent = user.metadata.lastSignInTime;
+        usernameDisplay.textContent = user.displayName || user.email;
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    const settingsPageHTML = `
+      <h2>Account Settings</h2>
+      <label for="site-theme">Site Theme</label>
+      <select id="site-theme">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="synthwave">Synthwave</option>
+      </select>
+      <button id="save-btn">Save Settings</button>
+    `;
+
+    const pagePlaceholders = {
+      "profile-content": "<h2>Profile Content</h2><p>Coming soon...</p>",
+      "css-blurbs": "<h2>CSS & Blurbs</h2><p>Coming soon...</p>",
+      "character-settings": "<h2>Character Settings</h2><p>Coming soon...</p>",
+      "design-manager": "<h2>Design Manager</h2><p>Coming soon...</p>",
+      "image-manager": "<h2>Image Manager</h2><p>Coming soon...</p>",
+      "subscribers": "<h2>Subscribers</h2><p>Coming soon...</p>",
+      "favorites": "<h2>Favorites</h2><p>Coming soon...</p>",
+      "email": "<h2>Email Settings</h2><p>Coming soon...</p>",
+      "dob": "<h2>Date of Birth Settings</h2><p>Coming soon...</p>",
+      "avatar": "<h2>Avatar Settings</h2><p>Coming soon...</p>"
+    };
+
+    function loadSettings() {
+      mainContent.innerHTML = settingsPageHTML;
+
+      const themeSelect = document.getElementById("site-theme");
+      const savedTheme = localStorage.getItem("siteTheme") || "light";
+      themeSelect.value = savedTheme;
+
+      document.getElementById("save-btn").addEventListener("click", () => {
+        const selectedTheme = themeSelect.value;
+        localStorage.setItem("siteTheme", selectedTheme);
+        document.body.classList.remove("theme-light", "theme-dark", "theme-synthwave");
+        document.body.classList.add(`theme-${selectedTheme}`);
+        alert("Theme updated!");
+      });
+    }
+
+    function loadPage(page) {
+      if (page === "settings") {
+        loadSettings();
+      } else if (pagePlaceholders[page]) {
+        mainContent.innerHTML = pagePlaceholders[page];
+      } else {
+        mainContent.innerHTML = "<h2>Page Not Found</h2>";
+      }
+    }
+
+    document.querySelectorAll("aside ul li a").forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        const page = link.getAttribute("data-page");
+        loadPage(page);
+      });
+    });
+  </script>
+</body>
+</html>
