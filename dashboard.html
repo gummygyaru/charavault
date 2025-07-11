@@ -114,6 +114,57 @@
       margin-top: 1rem;
       font-weight: bold;
     }
+
+    /* Profile content styles (copied from your profile section) */
+    .profile-container {
+      padding: 2rem;
+      background: #f4f4f8;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .profile-container h1 {
+      color: #9333ea;
+      margin-bottom: 1rem;
+    }
+
+    .profile-container textarea {
+      width: 100%;
+      min-height: 300px;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: monospace;
+      resize: vertical;
+    }
+
+    .preview-box {
+      background: white;
+      padding: 1rem;
+      margin-top: 2rem;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .preview-box h5 {
+      margin-top: 0;
+    }
+
+    .btn-save {
+      margin-top: 1rem;
+      background-color: #9333ea;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-save:hover {
+      background-color: #7e22ce;
+    }
   </style>
 </head>
 <body>
@@ -197,7 +248,7 @@
       }
     });
 
-    // Template for settings page content (keep your settings form here)
+    // Template for settings page content (unchanged, you can keep or update)
     const settingsPageHTML = `
       <h2>Account Settings</h2>
       <label for="avatar">Change Avatar (png, jpeg, gif, max 200x200)</label>
@@ -231,9 +282,27 @@
       <div id="message"></div>
     `;
 
-    // Placeholder for other pages
+    // The new profile content page HTML from your snippet
+    const profileContentHTML = `
+      <div class="profile-container">
+        <h1>Edit Profile</h1>
+        <p>This content will appear at the top of your public profile page. You can use HTML to style it however you like!</p>
+
+        <label for="profile-html">Your Profile HTML</label>
+        <textarea id="profile-html" placeholder="Paste your HTML here..."></textarea>
+
+        <button class="btn-save" onclick="updatePreview()">Preview</button>
+
+        <div class="preview-box mt-4">
+          <h5>Live Preview</h5>
+          <div id="profile-preview" style="padding: 1rem; border-top: 1px solid #ccc;"></div>
+        </div>
+      </div>
+    `;
+
+    // Placeholder for other pages - update the profile-content entry with the full profile editor HTML
     const pagePlaceholders = {
-      "profile-content": "<h2>Profile Content</h2><p>Coming soon...</p>",
+      "profile-content": profileContentHTML,
       "css-blurbs": "<h2>CSS & Blurbs</h2><p>Coming soon...</p>",
       "character-settings": "<h2>Character Settings</h2><p>Coming soon...</p>",
       "design-manager": "<h2>Design Manager</h2><p>Coming soon...</p>",
@@ -245,13 +314,9 @@
       "avatar": "<h2>Avatar Settings</h2><p>Coming soon...</p>"
     };
 
-    // Load settings data & add interactivity after settings page loads
+    // Function to load settings (unchanged)
     async function loadSettings() {
       mainContent.innerHTML = settingsPageHTML;
-
-      // Now add your JavaScript to load & handle the form inputs here
-      // (Basically all the code from your previous settings page JS)
-      // For example:
 
       const authUser = auth.currentUser;
       if (!authUser) {
@@ -259,15 +324,13 @@
         return;
       }
 
-      // Load Firestore data
-      import("https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js").then(({getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp}) => {
+      import("https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js").then(({getFirestore, doc, getDoc, updateDoc, serverTimestamp}) => {
         const db = getFirestore(app);
         const userDocRef = doc(db, "users", authUser.uid);
         getDoc(userDocRef).then(docSnap => {
           if(docSnap.exists()){
             const userData = docSnap.data();
 
-            // Fill inputs
             const avatarPreview = document.getElementById("avatar-preview");
             if(userData.avatarBase64) avatarPreview.src = userData.avatarBase64;
             document.getElementById("username-input").value = userData.username || "";
@@ -278,7 +341,6 @@
           }
         });
 
-        // Add avatar preview update
         document.getElementById("avatar").addEventListener("change", () => {
           const file = document.getElementById("avatar").files[0];
           if(!file) return;
@@ -294,7 +356,6 @@
           reader.readAsDataURL(file);
         });
 
-        // Change email button
         document.getElementById("change-email-btn").addEventListener("click", async () => {
           const newEmail = document.getElementById("email-input").value.trim();
           if(newEmail === authUser.email){
@@ -310,7 +371,6 @@
           }
         });
 
-        // Reset password button
         document.getElementById("reset-password-btn").addEventListener("click", async () => {
           try {
             await auth.sendPasswordResetEmail(authUser.email);
@@ -320,7 +380,6 @@
           }
         });
 
-        // Save settings button
         document.getElementById("save-btn").addEventListener("click", async () => {
           const newUsername = document.getElementById("username-input").value.trim();
           const newDob = document.getElementById("dob").value;
@@ -330,7 +389,6 @@
           const newSiteTheme = document.getElementById("site-theme").value;
           const newCustomCss = document.getElementById("custom-css").value;
 
-          // Check username change cooldown (assume 30 days)
           getDoc(userDocRef).then(docSnap => {
             if(docSnap.exists()){
               const data = docSnap.data();
@@ -357,12 +415,25 @@
       });
     }
 
-    // Function to load page content based on sidebar click
+    // Function to update live preview for profile content
+    window.updatePreview = function() {
+      const htmlContent = document.getElementById("profile-html").value;
+      document.getElementById("profile-preview").innerHTML = htmlContent;
+    };
+
+    // Load page content based on sidebar click
     function loadPage(page) {
       if(page === "settings"){
         loadSettings();
       } else if(pagePlaceholders[page]){
         mainContent.innerHTML = pagePlaceholders[page];
+        if(page === "profile-content"){
+          // Bind the updatePreview function to window so the button works after dynamic load
+          window.updatePreview = function() {
+            const htmlContent = document.getElementById("profile-html").value;
+            document.getElementById("profile-preview").innerHTML = htmlContent;
+          };
+        }
       } else {
         mainContent.innerHTML = "<h2>Page Not Found</h2>";
       }
