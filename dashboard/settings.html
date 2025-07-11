@@ -2,48 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Settings - chara.vault</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Upload Avatar - chara.vault</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, sans-serif;
-      background: #f4f4f8;
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    h2 {
-      color: #9333ea;
-    }
-    form {
-      background: white;
       padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      width: 320px;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+      background: #f4f4f8;
     }
     input[type="file"] {
-      cursor: pointer;
+      margin-bottom: 1rem;
     }
-    img#avatarPreview {
+    img {
+      border-radius: 12px;
       width: 200px;
       height: 200px;
-      object-fit: contain;
-      border: 2px solid #ccc;
-      border-radius: 12px;
-      background: white;
+      object-fit: cover;
+      border: 2px solid #9333ea;
+      display: block;
+      margin-bottom: 1rem;
     }
     button {
       background: #9333ea;
       color: white;
-      padding: 10px;
+      padding: 10px 15px;
       border: none;
       border-radius: 6px;
-      font-weight: bold;
       cursor: pointer;
     }
     button:hover {
@@ -51,39 +34,40 @@
     }
     #message {
       margin-top: 1rem;
-      font-weight: 600;
-      min-height: 1.5rem;
-      color: #e11d48;
-    }
-    #message.success {
-      color: #10b981;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-  <h2>Settings - Change Avatar</h2>
+  <h2>Change your Avatar</h2>
 
-  <form id="avatar-form">
-    <label for="avatarInput">Choose avatar image (png, jpeg, gif):</label>
-    <input type="file" id="avatarInput" accept="image/png, image/jpeg, image/gif" required />
-    <img id="avatarPreview" src="" alt="Avatar preview" />
-    <button type="submit">Upload Avatar</button>
-  </form>
+  <img id="avatarPreview" src="" alt="Your Avatar Preview" />
+
+  <input type="file" id="avatarInput" accept="image/png, image/jpeg, image/gif" />
+  <br />
+  <button id="uploadBtn">Upload Avatar</button>
 
   <p id="message"></p>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-    import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-storage.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      updateDoc
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
       authDomain: "charavault-e8cf5.firebaseapp.com",
       projectId: "charavault-e8cf5",
-      storageBucket: "charavault-e8cf5.appspot.com",
+      storageBucket: "charavault-e8cf5.firebasestorage.app",
       messagingSenderId: "385710051091",
       appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
       measurementId: "G-JNLB26DXJC",
@@ -91,76 +75,98 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
+    const firestore = getFirestore(app);
 
     const avatarInput = document.getElementById("avatarInput");
     const avatarPreview = document.getElementById("avatarPreview");
+    const uploadBtn = document.getElementById("uploadBtn");
     const messageEl = document.getElementById("message");
-    const form = document.getElementById("avatar-form");
 
-    let currentUser = null;
+    let selectedFile = null;
 
-    // Show image preview when user selects a file
-    avatarInput.addEventListener("change", () => {
-      const file = avatarInput.files[0];
-      if (file) {
-        avatarPreview.src = URL.createObjectURL(file);
-      } else {
-        avatarPreview.src = "";
-      }
-    });
+    avatarInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
 
-    // Check if user is logged in, if not redirect to login
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUser = user;
-      } else {
-        window.location.href = "login.html";
-      }
-    });
-
-    // Handle avatar upload and save URL to Firestore
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      if (!currentUser) {
-        messageEl.textContent = "⚠️ You must be logged in.";
+      if (!["image/png", "image/jpeg", "image/gif"].includes(file.type)) {
+        messageEl.textContent = "⚠️ Please select a PNG, JPEG, or GIF image.";
         return;
       }
 
-      const file = avatarInput.files[0];
-      if (!file) {
-        messageEl.textContent = "⚠️ Please select an image.";
+      selectedFile = file;
+
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        avatarPreview.src = event.target.result;
+        messageEl.textContent = "";
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Helper to convert file to Base64 string (without data prefix)
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          // remove "data:image/xxx;base64," prefix
+          const base64 = reader.result.split(",")[1];
+          resolve(base64);
+        };
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    uploadBtn.addEventListener("click", async () => {
+      if (!selectedFile) {
+        messageEl.textContent = "⚠️ Please select an image first.";
         return;
       }
-
-      // Optional: check file size here (like max 2MB)
 
       messageEl.textContent = "Uploading...";
 
       try {
-        // Upload file to Firebase Storage at "avatars/{userId}.png"
-        const storageRef = ref(storage, `avatars/${currentUser.uid}`);
+        // Wait for user login
+        const user = auth.currentUser;
+        if (!user) {
+          messageEl.textContent = "⚠️ You must be logged in.";
+          return;
+        }
 
-        await uploadBytes(storageRef, file);
+        // Convert to base64 string
+        const base64String = await fileToBase64(selectedFile);
 
-        // Get public download URL
-        const url = await getDownloadURL(storageRef);
+        // Update Firestore user document
+        const userDocRef = doc(firestore, "users", user.uid);
 
-        // Update Firestore user's avatarUrl field
-        const userDocRef = doc(db, "users", currentUser.uid);
         await updateDoc(userDocRef, {
-          avatarUrl: url,
+          avatarBase64: base64String,
+          avatarUpdatedAt: new Date()
         });
 
-        messageEl.textContent = "✅ Avatar updated!";
-        messageEl.classList.add("success");
-      } catch (error) {
-        messageEl.textContent = "⚠️ " + error.message;
-        messageEl.classList.remove("success");
+        messageEl.textContent = "✅ Avatar uploaded successfully!";
+      } catch (err) {
+        messageEl.textContent = "⚠️ Error uploading avatar: " + err.message;
       }
     });
-  </script>
-</body>
-</html>
+
+    // Load current avatar when page loads
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userDocRef = doc(firestore, "users", user.uid);
+        const docSnap = await getDoc(userDocRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.avatarBase64) {
+            avatarPreview.src = "data:image/png;base64," + data.avatarBase64;
+          } else {
+            avatarPreview.src = ""; // Or default avatar image url
+          }
+        }
+      } else {
+        // Not logged in? Send to login page
+        window.location.href = "login.html";
+      }
+    });
+  </s
