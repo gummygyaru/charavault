@@ -3,104 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <title>Settings - chara.vault</title>
-  <link rel="stylesheet" href="../style.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css"/>
+  <link rel="stylesheet" href="style.css" />
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, sans-serif;
       background: #f4f4f8;
-      padding: 2rem;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-
-    .settings-section {
+    h2 {
+      color: #9333ea;
+    }
+    form {
       background: white;
       padding: 2rem;
       border-radius: 12px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      max-width: 600px;
-      margin: auto;
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
-
-    label {
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-      display: block;
-    }
-
     input[type="file"] {
-      margin-top: 0.5rem;
+      cursor: pointer;
     }
-
-    #crop-area {
-      margin-top: 1rem;
-      max-width: 300px;
-      max-height: 300px;
-    }
-
-    #avatar-preview {
-      margin-top: 1rem;
+    img#avatarPreview {
       width: 200px;
       height: 200px;
-      object-fit: cover;
+      object-fit: contain;
       border: 2px solid #ccc;
-      border-radius: 8px;
+      border-radius: 12px;
+      background: white;
     }
-
-    #message {
-      margin-top: 1rem;
-      font-weight: bold;
-      color: #e11d48;
-    }
-
-    #message.success {
-      color: #10b981;
-    }
-
     button {
-      margin-top: 1rem;
       background: #9333ea;
       color: white;
-      padding: 10px 20px;
+      padding: 10px;
       border: none;
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
     }
-
     button:hover {
       background: #7e22ce;
+    }
+    #message {
+      margin-top: 1rem;
+      font-weight: 600;
+      min-height: 1.5rem;
+      color: #e11d48;
+    }
+    #message.success {
+      color: #10b981;
     }
   </style>
 </head>
 <body>
-  <div class="settings-section">
-    <h2>Upload Avatar</h2>
-    <label for="avatar-upload">Choose an image (PNG, JPG, GIF):</label>
-    <input type="file" id="avatar-upload" accept="image/png, image/jpeg, image/gif" />
-    
-    <div>
-      <img id="crop-area" style="display: none;" />
-    </div>
 
-    <button id="crop-upload" style="display: none;">Crop & Upload</button>
+  <h2>Settings - Change Avatar</h2>
 
-    <img id="avatar-preview" src="../default-avatar.png" alt="Your Avatar" />
-    <p id="message"></p>
-  </div>
+  <form id="avatar-form">
+    <label for="avatarInput">Choose avatar image (png, jpeg, gif):</label>
+    <input type="file" id="avatarInput" accept="image/png, image/jpeg, image/gif" required />
+    <img id="avatarPreview" src="" alt="Avatar preview" />
+    <button type="submit">Upload Avatar</button>
+  </form>
 
-  <!-- Firebase + Cropper -->
+  <p id="message"></p>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-    import {
-      getAuth,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-    import {
-      getStorage,
-      ref,
-      uploadBytes,
-      getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-storage.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
@@ -109,74 +86,81 @@
       storageBucket: "charavault-e8cf5.appspot.com",
       messagingSenderId: "385710051091",
       appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
-      measurementId: "G-JNLB26DXJC"
+      measurementId: "G-JNLB26DXJC",
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
     const storage = getStorage(app);
 
-    let cropper;
-    const uploadInput = document.getElementById("avatar-upload");
-    const cropArea = document.getElementById("crop-area");
-    const cropBtn = document.getElementById("crop-upload");
-    const preview = document.getElementById("avatar-preview");
-    const message = document.getElementById("message");
+    const avatarInput = document.getElementById("avatarInput");
+    const avatarPreview = document.getElementById("avatarPreview");
+    const messageEl = document.getElementById("message");
+    const form = document.getElementById("avatar-form");
 
+    let currentUser = null;
+
+    // Show image preview when user selects a file
+    avatarInput.addEventListener("change", () => {
+      const file = avatarInput.files[0];
+      if (file) {
+        avatarPreview.src = URL.createObjectURL(file);
+      } else {
+        avatarPreview.src = "";
+      }
+    });
+
+    // Check if user is logged in, if not redirect to login
     onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "../login.html";
+      if (user) {
+        currentUser = user;
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    // Handle avatar upload and save URL to Firestore
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!currentUser) {
+        messageEl.textContent = "⚠️ You must be logged in.";
         return;
       }
 
-      uploadInput.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+      const file = avatarInput.files[0];
+      if (!file) {
+        messageEl.textContent = "⚠️ Please select an image.";
+        return;
+      }
 
-        const reader = new FileReader();
-        reader.onload = function (event) {
-          cropArea.src = event.target.result;
-          cropArea.style.display = "block";
-          cropBtn.style.display = "inline-block";
+      // Optional: check file size here (like max 2MB)
 
-          if (cropper) cropper.destroy();
-          cropper = new Cropper(cropArea, {
-            aspectRatio: 1,
-            viewMode: 1,
-            autoCropArea: 1,
-          });
-        };
-        reader.readAsDataURL(file);
-      });
+      messageEl.textContent = "Uploading...";
 
-      cropBtn.addEventListener("click", async () => {
-        try {
-          const canvas = cropper.getCroppedCanvas({
-            width: 200,
-            height: 200,
-          });
+      try {
+        // Upload file to Firebase Storage at "avatars/{userId}.png"
+        const storageRef = ref(storage, `avatars/${currentUser.uid}`);
 
-          const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
-          const avatarRef = ref(storage, `avatars/${user.uid}`);
-          await uploadBytes(avatarRef, blob);
-          const url = await getDownloadURL(avatarRef);
+        await uploadBytes(storageRef, file);
 
-          preview.src = url;
-          message.textContent = "✅ Avatar uploaded!";
-          message.className = "success";
+        // Get public download URL
+        const url = await getDownloadURL(storageRef);
 
-          // Hide cropper
-          cropArea.style.display = "none";
-          cropBtn.style.display = "none";
-          cropper.destroy();
-        } catch (err) {
-          message.textContent = "⚠️ " + err;
-          message.classList.remove("success");
-        }
-      });
+        // Update Firestore user's avatarUrl field
+        const userDocRef = doc(db, "users", currentUser.uid);
+        await updateDoc(userDocRef, {
+          avatarUrl: url,
+        });
+
+        messageEl.textContent = "✅ Avatar updated!";
+        messageEl.classList.add("success");
+      } catch (error) {
+        messageEl.textContent = "⚠️ " + error.message;
+        messageEl.classList.remove("success");
+      }
     });
   </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
 </body>
 </html>
