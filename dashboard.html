@@ -310,10 +310,23 @@
         </div>
       </div>
     `;
+
+    const characterProfileSettingsHTML = `
+      <div class="character-profile-settings-container">
+        <h1>Character Profile Settings</h1>
+        <p>Customize global CSS and other settings applied to all your character pages.</p>
+        <label for="global-character-css">Global Characters CSS</label>
+        <textarea id="global-character-css" placeholder="Enter CSS here..." rows="10" style="width: 100%;"></textarea>
+        <button class="btn-save" id="save-global-character-css">Save</button>
+        <div id="global-character-css-message"></div>
+        </div>
+      </div>
+    `;
+
     // Placeholder for other pages - update the profile-content entry with the full profile editor HTML
     const pagePlaceholders = {
       "profile-content": profileContentHTML,
-      "css-blurbs": cssBlurbsHTML,
+      "css-blurbs": cssBlurbsHTML, characterProfileSettingsHTML,
       "character-settings": profileContentHTML,
       "design-manager": profileContentHTML,
       "image-manager": profileContentHTML,
