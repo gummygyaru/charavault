@@ -1,6 +1,6 @@
-const avatarSettingsHTML = `
-  <div class="avatar-settings-container">
-    <h1>Avatar Settings</h1>
+    const avatarSettingsHTML = `
+        <div class="avatar-settings-container">
+        <h1>Avatar Settings</h1>
 
     <label for="avatar-upload">Upload Avatar (PNG, JPEG, GIF; max 200x200)</label><br/>
     <input type="file" id="avatar-upload" accept="image/png, image/jpeg, image/gif" />
@@ -21,5 +21,6 @@ const avatarSettingsHTML = `
 
     <button id="save-avatar-settings" class="btn-save" style="margin-top: 1rem; background-color: #9333ea; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">Save Settings</button>
     <div id="save-message" style="margin-top: 0.5rem; font-weight: bold;"></div>
-  </div>
-`;
+        </div>
+      </div>
+    `;
