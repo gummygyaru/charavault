@@ -11,14 +11,14 @@ async function insertLayout() {
   // Insert footer at bottom of body
   document.body.appendChild(footer);
 
-  // Load header and footer content
-  await fetch('/partials/header.html')
+  // Load header and footer content with relative paths (no leading slash)
+  await fetch('header.html')
     .then(res => res.text())
     .then(data => {
       header.innerHTML = data;
     });
 
-  await fetch('/partials/footer.html')
+  await fetch('footer.html')
     .then(res => res.text())
     .then(data => {
       footer.innerHTML = data;
@@ -41,4 +41,3 @@ async function insertLayout() {
 }
 
 document.addEventListener("DOMContentLoaded", insertLayout);
-
