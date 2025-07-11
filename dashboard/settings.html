@@ -1,9 +1,138 @@
 <!DOCTYPE html>
-<html>
-<head><title>Settings - chara.vault</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Settings - chara.vault</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f4f4f8;
+      padding: 2rem;
+    }
+
+    h2 {
+      color: #9333ea;
+    }
+
+    .settings-section {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      margin: auto;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    input[type="file"] {
+      margin-top: 0.5rem;
+    }
+
+    #avatar-preview {
+      margin-top: 1rem;
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+
+    #message {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: #e11d48;
+    }
+
+    #message.success {
+      color: #10b981;
+    }
+  </style>
+</head>
 <body>
-  <h1>Settings</h1>
-  <p>This is the Settings page. Coming soon!</p>
-  <a href="../dashboard.html">← Back to Dashboard</a>
+  <div class="settings-section">
+    <h2>Upload Avatar</h2>
+    <label for="avatar-upload">Choose a 200x200 PNG, JPG, or GIF:</label>
+    <input type="file" id="avatar-upload" accept="image/png, image/jpeg, image/gif" />
+    <img id="avatar-preview" src="../default-avatar.png" alt="Your Avatar" />
+    <p id="message"></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
+      authDomain: "charavault-e8cf5.firebaseapp.com",
+      projectId: "charavault-e8cf5",
+      storageBucket: "charavault-e8cf5.appspot.com", // corrected bucket domain
+      messagingSenderId: "385710051091",
+      appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
+      measurementId: "G-JNLB26DXJC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const storage = getStorage(app);
+    const uploadInput = document.getElementById("avatar-upload");
+    const preview = document.getElementById("avatar-preview");
+    const message = document.getElementById("message");
+
+    function validateImage(file) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          if (img.width === 200 && img.height === 200) {
+            resolve(true);
+          } else {
+            reject("Image must be 200x200 pixels.");
+          }
+        };
+        img.onerror = () => reject("Invalid image.");
+        img.src = URL.createObjectURL(file);
+      });
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "../login.html";
+        return;
+      }
+
+      uploadInput.addEventListener("change", async () => {
+        const file = uploadInput.files[0];
+        if (!file) return;
+
+        try {
+          await validateImage(file);
+          const avatarRef = ref(storage, `avatars/${user.uid}`);
+          await uploadBytes(avatarRef, file);
+          const url = await getDownloadURL(avatarRef);
+
+          preview.src = url;
+          message.textContent = "✅ Avatar uploaded!";
+          message.className = "success";
+        } catch (err) {
+          message.textContent = "⚠️ " + err;
+          message.classList.remove("success");
+        }
+      });
+    });
+  </script>
 </body>
 </html>
