@@ -16,7 +16,7 @@ const avatarSettingsHTML = `
     <h3>Live Preview</h3>
     <div style="position: relative; width: 200px; height: 200px;">
       <img id="live-avatar-preview" src="" alt="Avatar Live Preview" style="width: 200px; height: 200px; border-radius: 50%; object-fit: contain; border: 1px solid #ccc;" />
-      <img id="live-frame-preview" src="/frames/frame1.png" alt="Frame Live Preview" style="position: absolute; top: 0; left: 0; width: 200px; height: 200px; pointer-events: none; border-radius: 50%;" />
+      <img id="live-frame-preview" src="frames/frame1.png" alt="Frame Live Preview" style="position: absolute; top: 0; left: 0; width: 200px; height: 200px; pointer-events: none; border-radius: 50%;" />
     </div>
 
     <button id="save-avatar-settings" class="btn-save" style="margin-top: 1rem; background-color: #9333ea; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">Save Settings</button>
