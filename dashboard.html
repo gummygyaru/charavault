@@ -304,15 +304,17 @@
     // Placeholder for other pages - update the profile-content entry with the full profile editor HTML
     const pagePlaceholders = {
       "profile-content": profileContentHTML,
-      "css-blurbs": profileContentHTML,
-      "character-settings": profileContentHTML,
-      "design-manager": profileContentHTML,
-      "image-manager": profileContentHTML,
-      "subscribers": profileContentHTML,
-      "favorites": profileContentHTML,
-      "email": profileContentHTML,
-      "dob": profileContentHTML,
-      "avatar": "<h2>Avatar Settings</h2><p>Coming soon...</p>"
+      "css-blurbs": cssBlurbsHTML,
+      "character-settings": characterSettingsHTML,
+      "design-manager": designManagerHTML,
+      "image-manager": imageManagerHTML,
+      "subscribers": subscribersHTML,
+      "favorites": favoritesHTML,
+      "email": emailHTML,
+      "dob": dobHTML,
+      "avatar": avatarHTML
+};
+
     };
 
     // Function to load settings (unchanged)
@@ -424,21 +426,56 @@
 
     // Load page content based on sidebar click
     function loadPage(page) {
-      if(page === "settings"){
-        loadSettings();
-      } else if(pagePlaceholders[page]){
-        mainContent.innerHTML = pagePlaceholders[page];
-        if(page === "profile-content"){
-          // Bind the updatePreview function to window so the button works after dynamic load
-          window.updatePreview = function() {
-            const htmlContent = document.getElementById("profile-html").value;
-            document.getElementById("profile-preview").innerHTML = htmlContent;
-          };
+        if (page === "settings") {
+            loadSettings();
+        } else if (pagePlaceholders[page]) {
+            mainContent.innerHTML = pagePlaceholders[page];
+
+            if (page === "profile-content") {
+                const authUser = auth.currentUser;
+                if (!authUser) {
+                    window.location.href = "login.html";
+                    return;
+                }
+
+                import("https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js")
+                    .then(({ getFirestore, doc, getDoc, setDoc }) => {
+                        const db = getFirestore(app);
+                        const userDocRef = doc(db, "users", authUser.uid);
+
+                        // Load saved profile HTML if it exists
+                        getDoc(userDocRef).then((docSnap) => {
+                            if (docSnap.exists()) {
+                                const data = docSnap.data();
+                                const savedHtml = data.profileHtml || "";
+                                document.getElementById("profile-html").value = savedHtml;
+                                document.getElementById("profile-preview").innerHTML = savedHtml;
+                            }
+                        });
+
+                        // Preview button functionality
+                        window.updatePreview = function () {
+                            const htmlContent = document.getElementById("profile-html").value;
+                            document.getElementById("profile-preview").innerHTML = htmlContent;
+                        };
+
+                        // Submit button functionality
+                        document.getElementById("submit-btn").addEventListener("click", async () => {
+                            const htmlContent = document.getElementById("profile-html").value;
+                            try {
+                                await setDoc(userDocRef, { profileHtml: htmlContent }, { merge: true });
+                                alert("Profile HTML saved!");
+                            } catch (err) {
+                                alert("Error saving profile: " + err.message);
+                            }
+                        });
+                    });
+            }
+        } else {
+            mainContent.innerHTML = "<h2>Page Not Found</h2>";
         }
-      } else {
-        mainContent.innerHTML = "<h2>Page Not Found</h2>";
-      }
     }
+
 
     // Attach click handlers on sidebar links
     document.querySelectorAll("aside ul li a").forEach(link => {
