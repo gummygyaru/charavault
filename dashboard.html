@@ -442,6 +442,54 @@
 
     // Load page content based on sidebar click
     function loadPage(page) {
+    if (page === "css-blurbs") {
+    mainContent.innerHTML = cssBlurbsHTML;
+
+    const authUser = auth.currentUser;
+    if (!authUser) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    import("https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js").then(
+        ({ getFirestore, doc, getDoc, setDoc }) => {
+            const db = getFirestore(app);
+            const userDocRef = doc(db, "users", authUser.uid);
+
+            // Load saved data
+            getDoc(userDocRef).then((docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById("profile-blurb-html").value = data.profileBlurbHtml || "";
+                    document.getElementById("global-character-css").value = data.globalCharacterCss || "";
+                }
+            });
+
+            // Save Profile Blurb
+            document.getElementById("save-profile-blurb").addEventListener("click", async () => {
+                const val = document.getElementById("profile-blurb-html").value;
+                try {
+                    await setDoc(userDocRef, { profileBlurbHtml: val }, { merge: true });
+                    document.getElementById("profile-blurb-message").textContent = "Saved successfully!";
+                } catch (err) {
+                    document.getElementById("profile-blurb-message").textContent = "Error saving: " + err.message;
+                }
+            });
+
+            // Save Global Character CSS
+            document.getElementById("save-global-character-css").addEventListener("click", async () => {
+                const val = document.getElementById("global-character-css").value;
+                try {
+                    await setDoc(userDocRef, { globalCharacterCss: val }, { merge: true });
+                    document.getElementById("global-character-css-message").textContent = "Saved successfully!";
+                } catch (err) {
+                    document.getElementById("global-character-css-message").textContent = "Error saving: " + err.message;
+                }
+            });
+        }
+    );
+}
+
       if(page === "settings"){
         loadSettings();
       } else if(pagePlaceholders[page]){
@@ -479,3 +527,5 @@
   </script>
 </body>
 </html>
+
+
