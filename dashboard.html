@@ -282,8 +282,6 @@
       <div id="message"></div>
     `;
 
-
-
     // The new profile content page HTML from your snippet
     const profileContentHTML = `
       <div class="profile-container">
@@ -294,7 +292,6 @@
         <textarea id="profile-html" placeholder="Paste your HTML here..."></textarea>
 
         <button class="btn-save" onclick="updatePreview()">Preview</button>
-        <button class="btn-save" id="submit-btn">Submit</button>
 
         <div class="preview-box mt-4">
           <h5>Live Preview</h5>
@@ -306,17 +303,15 @@
     // Placeholder for other pages - update the profile-content entry with the full profile editor HTML
     const pagePlaceholders = {
       "profile-content": profileContentHTML,
-      "css-blurbs": cssBlurbsHTML,
-      "character-settings": characterSettingsHTML,
-      "design-manager": designManagerHTML,
-      "image-manager": imageManagerHTML,
-      "subscribers": subscribersHTML,
-      "favorites": favoritesHTML,
-      "email": emailHTML,
-      "dob": dobHTML,
-      "avatar": avatarHTML
-};
-
+      "css-blurbs": css-blurbs.html,
+      "character-settings": profileContentHTML,
+      "design-manager": profileContentHTML,
+      "image-manager": profileContentHTML,
+      "subscribers": profileContentHTML,
+      "favorites": profileContentHTML,
+      "email": profileContentHTML,
+      "dob": profileContentHTML,
+      "avatar": "<h2>Avatar Settings</h2><p>Coming soon...</p>"
     };
 
     // Function to load settings (unchanged)
@@ -428,56 +423,21 @@
 
     // Load page content based on sidebar click
     function loadPage(page) {
-        if (page === "settings") {
-            loadSettings();
-        } else if (pagePlaceholders[page]) {
-            mainContent.innerHTML = pagePlaceholders[page];
-
-            if (page === "profile-content") {
-                const authUser = auth.currentUser;
-                if (!authUser) {
-                    window.location.href = "login.html";
-                    return;
-                }
-
-                import("https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js")
-                    .then(({ getFirestore, doc, getDoc, setDoc }) => {
-                        const db = getFirestore(app);
-                        const userDocRef = doc(db, "users", authUser.uid);
-
-                        // Load saved profile HTML if it exists
-                        getDoc(userDocRef).then((docSnap) => {
-                            if (docSnap.exists()) {
-                                const data = docSnap.data();
-                                const savedHtml = data.profileHtml || "";
-                                document.getElementById("profile-html").value = savedHtml;
-                                document.getElementById("profile-preview").innerHTML = savedHtml;
-                            }
-                        });
-
-                        // Preview button functionality
-                        window.updatePreview = function () {
-                            const htmlContent = document.getElementById("profile-html").value;
-                            document.getElementById("profile-preview").innerHTML = htmlContent;
-                        };
-
-                        // Submit button functionality
-                        document.getElementById("submit-btn").addEventListener("click", async () => {
-                            const htmlContent = document.getElementById("profile-html").value;
-                            try {
-                                await setDoc(userDocRef, { profileHtml: htmlContent }, { merge: true });
-                                alert("Profile HTML saved!");
-                            } catch (err) {
-                                alert("Error saving profile: " + err.message);
-                            }
-                        });
-                    });
-            }
-        } else {
-            mainContent.innerHTML = "<h2>Page Not Found</h2>";
+      if(page === "settings"){
+        loadSettings();
+      } else if(pagePlaceholders[page]){
+        mainContent.innerHTML = pagePlaceholders[page];
+        if(page === "profile-content"){
+          // Bind the updatePreview function to window so the button works after dynamic load
+          window.updatePreview = function() {
+            const htmlContent = document.getElementById("profile-html").value;
+            document.getElementById("profile-preview").innerHTML = htmlContent;
+          };
         }
+      } else {
+        mainContent.innerHTML = "<h2>Page Not Found</h2>";
+      }
     }
-
 
     // Attach click handlers on sidebar links
     document.querySelectorAll("aside ul li a").forEach(link => {
@@ -497,40 +457,6 @@
         <p><strong>Last Login:</strong> <span id="lastLogin">loading...</span></p>
       </div>
     `;
-const characterSettingsHTML = `
-    <div class="character-settings-container">
-        <h1>Character Management</h1>
-        <p>These settings apply to your character uploads and design defaults.</p>
-
-        <label for="design-tos">Global Design Terms of Use</label>
-        <textarea id="design-tos" placeholder="Enter your design TOS in HTML..."></textarea>
-
-        <label for="default-privacy">Default Character Privacy</label>
-        <select id="default-privacy">
-            <option value="private">Private</option>
-            <option value="public">Public</option>
-            <option value="key">Key Only</option>
-        </select>
-
-        <label for="default-listing">Default Character Listing</label>
-        <select id="default-listing">
-            <option value="private">Private</option>
-            <option value="public">Public</option>
-            <option value="key">Key Only</option>
-        </select>
-
-        <label>Default Design Tradeability</label>
-        <div style="margin-bottom: 1rem;">
-            <div><input type="checkbox" id="tradeable" /> <label for="tradeable">Tradeable</label></div>
-            <div><input type="checkbox" id="sellable" /> <label for="sellable">Sellable</label></div>
-            <div><input type="checkbox" id="giftable" /> <label for="giftable">Giftable</label></div>
-        </div>
-
-        <button class="btn-save" id="save-character-settings">Save Settings</button>
-        <div id="char-settings-message"></div>
-    </div>
-`;
-
   </script>
 </body>
 </html>
