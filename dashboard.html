@@ -197,7 +197,7 @@
     });
 
     // Template for settings page content (keep your settings form here)
-    const settingsPageHTML = 
+    const settingsPageHTML = `
       <h2>Account Settings</h2>
       <label for="avatar">Change Avatar (png, jpeg, gif, max 200x200)</label>
       <input type="file" id="avatar" accept="image/png, image/jpeg, image/gif" />
@@ -228,7 +228,7 @@
 
       <button id="save-btn">Save Settings</button>
       <div id="message"></div>
-    ;
+    `;
 
     // Placeholder for other pages
     const pagePlaceholders = {
@@ -377,14 +377,14 @@
     });
 
     // Load default page (welcome)
-    mainContent.innerHTML = 
+    mainContent.innerHTML = `
       <div class="section-title">Welcome to your Dashboard</div>
       <div class="info-box">
         <p><strong>Username:</strong> <span id="username">shimura</span></p>
         <p><strong>Email:</strong> <span id="email">example@email.com</span></p>
         <p><strong>Last Login:</strong> <span id="lastLogin">loading...</span></p>
       </div>
-    ;
+    `;
   </script>
 </body>
 </html>
