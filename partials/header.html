@@ -1,1 +1,114 @@
+<!-- header.html -->
+<header class="site-header">
+  <div class="header-left">
+    <h1>chara.<span class="vault">vault</span></h1>
+  </div>
+  <div class="header-right">
+    <a href="/profile.html" title="Profile" class="icon-link">
+      <!-- Profile Icon -->
+      <svg class="icon" viewBox="0 0 256 256"><use href="#profile-icon" /></svg>
+    </a>
+    <a href="/dashboard.html" title="Settings" class="icon-link">
+      <!-- Settings Icon -->
+      <svg class="icon" viewBox="0 0 256 256"><use href="#settings-icon" /></svg>
+    </a>
+    <a href="/notifications.html" title="Notifications" class="icon-link notification-icon">
+      <!-- Notifications Icon -->
+      <svg class="icon" viewBox="0 0 256 256"><use href="#notifications-icon" /></svg>
+      <span class="notification-count">3</span>
+    </a>
+    <div class="icon-link submit-dropdown">
+      <!-- Submit Icon -->
+      <svg class="icon" viewBox="0 0 256 256"><use href="#submit-icon" /></svg>
+      <div class="dropdown-menu">
+        <a href="/submit-art.html">Submit Art</a>
+        <a href="/submit-character.html">Submit Character</a>
+        <a href="/submit-world.html">Submit World</a>
+        <a href="/submit-story.html">Submit Story</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SVG Definitions (for reusability) -->
+  <svg style="display:none">
+    <symbol id="profile-icon" viewBox="0 0 256 256">
+      <!-- Paste Profile SVG PATH here -->
+    </symbol>
+    <symbol id="settings-icon" viewBox="0 0 256 256">
+      <!-- Paste Settings SVG PATH here -->
+    </symbol>
+    <symbol id="notifications-icon" viewBox="0 0 256 256">
+      <!-- Paste Notifications SVG PATH here -->
+    </symbol>
+    <symbol id="submit-icon" viewBox="0 0 256 256">
+      <!-- Paste Submit SVG PATH here -->
+    </symbol>
+  </svg>
+</header>
+
+<style>
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: var(--primary-color, #3b82f6);
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+}
+.site-header h1 {
+  font-size: 1.5rem;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.icon-link {
+  position: relative;
+  cursor: pointer;
+}
+.icon {
+  width: 28px;
+  height: 28px;
+  fill: #f89c74;
+}
+.notification-icon .notification-count {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: red;
+  color: white;
+  font-size: 0.7rem;
+  border-radius: 50%;
+  padding: 2px 5px;
+}
+.submit-dropdown {
+  position: relative;
+}
+.submit-dropdown .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background: white;
+  color: black;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  padding: 0.5rem 0;
+  border-radius: 5px;
+  z-index: 10;
+}
+.submit-dropdown .dropdown-menu a {
+  display: block;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: black;
+}
+.submit-dropdown .dropdown-menu a:hover {
+  background: #f0f0f0;
+}
+.submit-dropdown:hover .dropdown-menu {
+  display: block;
+}
+</style>
 
