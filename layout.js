@@ -8,9 +8,9 @@ const avatarSettingsHTML = `
 
     <h2 style="margin-top: 2rem;">Select Your Avatar Frame</h2>
     <div id="frame-options" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
-      <img src="/frames/frame1.png" alt="Frame 1" data-frame="frame1" class="frame-option" style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent; border-radius: 50%;" />
-      <img src="/frames/frame2.png" alt="Frame 2" data-frame="frame2" class="frame-option" style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent; border-radius: 50%;" />
-      <img src="/frames/frame3.png" alt="Frame 3" data-frame="frame3" class="frame-option" style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent; border-radius: 50%;" />
+      <img src="frames/frame1.png" alt="Frame 1" data-frame="frame1" class="frame-option" style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent; border-radius: 50%;" />
+      <img src="frames/frame2.png" alt="Frame 2" data-frame="frame2" class="frame-option" style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent; border-radius: 50%;" />
+      <img src="frames/frame3.png" alt="Frame 3" data-frame="frame3" class="frame-option" style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent; border-radius: 50%;" />
     </div>
 
     <h3>Live Preview</h3>
