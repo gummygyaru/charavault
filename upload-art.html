@@ -29,10 +29,19 @@
     }
     input, select, textarea {
       width: 100%;
-      padding: 0.6rem;
+      padding: 0.5rem;
       margin-top: 0.25rem;
       border-radius: 6px;
       border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    .checkbox-group {
+      margin-top: 0.5rem;
+    }
+    .checkbox-group label {
+      font-weight: normal;
+      margin-right: 1rem;
+      cursor: pointer;
     }
     button {
       margin-top: 2rem;
@@ -42,9 +51,15 @@
       padding: 0.75rem 1.5rem;
       border-radius: 6px;
       cursor: pointer;
+      font-size: 1rem;
     }
     button:hover {
       background: #7e22ce;
+    }
+    .info-text {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.25rem;
     }
   </style>
 </head>
@@ -52,30 +67,57 @@
   <div class="form-container">
     <h1>Submit Art</h1>
     <form id="art-upload-form">
-      <label for="art-title">Title of the Art</label>
-      <input type="text" id="art-title" required />
+      <label for="art-file">Upload Image</label>
+      <input type="file" id="art-file" accept="image/png, image/jpeg, image/gif" required />
+      <div class="info-text">Images may be PNG, GIF, or JPG and up to 4MB in size.</div>
 
-      <label for="art-file">Upload Art File</label>
-      <input type="file" id="art-file" accept="image/*" required />
+      <label for="caption">Caption (optional)</label>
+      <textarea id="caption" rows="3" placeholder="Add a caption or description..."></textarea>
 
-      <label for="character">Character Featured</label>
-      <select id="character">
-        <option value="">Select a character</option>
-        <option value="self">My Character</option>
-        <option value="other">Someone Else's Character</option>
+      <label for="authorized-viewers">Authorized Viewers (Privacy)</label>
+      <select id="authorized-viewers" required>
+        <option value="private">Private</option>
+        <option value="friends">Friends Only</option>
+        <option value="public">Public</option>
       </select>
 
-      <label for="artist-credit">Who Created the Art?</label>
-      <input type="text" id="artist-credit" placeholder="Username or external link" required />
+      <label for="public-viewers">Public Viewers</label>
+      <select id="public-viewers" required>
+        <option value="full-size">Full-Size</option>
+        <option value="watermarked" selected>Watermarked</option>
+      </select>
 
-      <label for="character-credit">Character Credit</label>
-      <input type="text" id="character-credit" placeholder="Username or external link" required />
+      <label for="watermark">Watermark</label>
+      <input type="text" id="watermark" placeholder="Default: gummygyaru" value="gummygyaru" />
 
-      <label for="description">Art Description</label>
-      <textarea id="description" rows="4" placeholder="Optional notes about the art..."></textarea>
+      <small><a href="#">See Watermark Settings for privacy defaults and custom watermarks.</a></small>
+
+      <fieldset style="margin-top: 1rem;">
+        <legend><strong>NSFW Settings</strong></legend>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="sexual-content" /> Sexual Content</label>
+          <label><input type="checkbox" id="nudity" /> Nudity</label>
+          <label><input type="checkbox" id="gore" /> Gore</label>
+          <label><input type="checkbox" id="sensitive" /> Sensitive Content</label>
+        </div>
+      </fieldset>
+
+      <label for="characters-featured">Characters Featured (comma-separated usernames or links)</label>
+      <input type="text" id="characters-featured" placeholder="shimura, otheruser, https://..." />
+
+      <label for="artist-credit-onsite">On-site Artist Credit (username)</label>
+      <input type="text" id="artist-credit-onsite" placeholder="shimura" />
+
+      <label for="artist-credit-offsite">Off-site Artist Credit (link)</label>
+      <input type="url" id="artist-credit-offsite" placeholder="https://artistwebsite.com" />
+
+      <small style="color: #d14343; margin-top: 1rem; display: block;">
+        Do not use images you do not have permission to use. Please read the rules for information on image usage and crediting. Art theft will not be tolerated.
+      </small>
 
       <button type="submit">Submit Art</button>
     </form>
+
     <div id="upload-message" style="margin-top: 1rem; font-weight: bold;"></div>
   </div>
 
@@ -122,18 +164,34 @@
           return;
         }
 
+        if (file.size > 4 * 1024 * 1024) {
+          message.textContent = "File size must be 4MB or less.";
+          return;
+        }
+
         try {
+          // Upload image to Firebase Storage
           const storageRef = ref(storage, `art/${user.uid}/${Date.now()}_${file.name}`);
           await uploadBytes(storageRef, file);
           const fileURL = await getDownloadURL(storageRef);
 
+          // Add Firestore doc
           await addDoc(collection(db, "artworks"), {
             uid: user.uid,
-            title: document.getElementById("art-title").value,
-            characterType: document.getElementById("character").value,
-            artistCredit: document.getElementById("artist-credit").value,
-            characterCredit: document.getElementById("character-credit").value,
-            description: document.getElementById("description").value,
+            title: file.name,
+            caption: document.getElementById("caption").value,
+            authorizedViewers: document.getElementById("authorized-viewers").value,
+            publicViewers: document.getElementById("public-viewers").value,
+            watermark: document.getElementById("watermark").value || "gummygyaru",
+            nsfwSettings: {
+              sexualContent: document.getElementById("sexual-content").checked,
+              nudity: document.getElementById("nudity").checked,
+              gore: document.getElementById("gore").checked,
+              sensitiveContent: document.getElementById("sensitive").checked,
+            },
+            charactersFeatured: document.getElementById("characters-featured").value.split(",").map(s => s.trim()).filter(Boolean),
+            artistCreditOnsite: document.getElementById("artist-credit-onsite").value,
+            artistCreditOffsite: document.getElementById("artist-credit-offsite").value,
             imageUrl: fileURL,
             timestamp: serverTimestamp(),
           });
