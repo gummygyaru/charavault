@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Submit Character - chara.vault</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: #f4f4f8;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      padding: 2rem;
+    }
+    .form-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 700px;
+      margin: auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #9333ea;
+      margin-bottom: 1rem;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.25rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 2rem;
+      background: #9333ea;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #7e22ce;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>Submit Character</h1>
+    <form id="character-upload-form">
+      <label for="character-name">Character Name</label>
+      <input type="text" id="character-name" required />
+
+      <label for="character-file">Upload Character Reference Image</label>
+      <input type="file" id="character-file" accept="image/*" required />
+
+      <label for="design-credit">Design Credit</label>
+      <input type="text" id="design-credit" placeholder="Username or external link" required />
+
+      <label for="description">Character Description</label>
+      <textarea id="description" rows="4" placeholder="Optional notes about the character..."></textarea>
+
+      <button type="submit">Submit Character</button>
+    </form>
+    <div id="upload-message" style="margin-top: 1rem; font-weight: bold;"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-storage.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
+      authDomain: "charavault-e8cf5.firebaseapp.com",
+      projectId: "charavault-e8cf5",
+      storageBucket: "charavault-e8cf5.appspot.com",
+      messagingSenderId: "385710051091",
+      appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
+      measurementId: "G-JNLB26DXJC",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+    const auth = getAuth(app);
+
+    const form = document.getElementById("character-upload-form");
+    const message = document.getElementById("upload-message");
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        message.textContent = "You must be logged in to submit a character.";
+        form.style.display = "none";
+        return;
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        message.textContent = "Uploading...";
+
+        const fileInput = document.getElementById("character-file");
+        const file = fileInput.files[0];
+
+        if (!file) {
+          message.textContent = "Please select a reference image.";
+          return;
+        }
+
+        try {
+          const storageRef = ref(storage, `characters/${user.uid}/${Date.now()}_${file.name}`);
+          await uploadBytes(storageRef, file);
+          const fileURL = await getDownloadURL(storageRef);
+
+          await addDoc(collection(db, "characters"), {
+            uid: user.uid,
+            name: document.getElementById("character-name").value,
+            designCredit: document.getElementById("design-credit").value,
+            description: document.getElementById("description").value,
+            imageUrl: fileURL,
+            timestamp: serverTimestamp(),
+            confirmed: false, // require approval if not your design
+          });
+
+          message.textContent = "✅ Character submitted successfully!";
+          form.reset();
+        } catch (err) {
+          console.error("Error uploading character:", err);
+          message.textContent = "❌ Error: " + err.message;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
