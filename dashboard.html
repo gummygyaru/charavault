@@ -602,5 +602,46 @@ const profileBlurbHTML = `
       </div>
     `;
   </script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
+  authDomain: "charavault-e8cf5.firebaseapp.com",
+  projectId: "charavault-e8cf5",
+  storageBucket: "charavault-e8cf5.firebasestorage.app",
+  messagingSenderId: "385710051091",
+  appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
+  measurementId: "G-JNLB26DXJC",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+const dashboardDiv = document.getElementById("dashboard");
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const uid = user.uid;
+    const email = user.email;
+    const lastLogin = user.metadata.lastSignInTime;
+
+    // Get user's extra info from Firestore (e.g., username)
+    const userDoc = await getDoc(doc(db, "users", uid));
+    const userData = userDoc.exists() ? userDoc.data() : {};
+
+    dashboardDiv.innerHTML = `
+      <h1>Welcome to your Dashboard</h1>
+      <p><strong>Username:</strong> ${userData.username || "Unknown"}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Last Login:</strong> ${new Date(lastLogin).toLocaleString()}</p>
+    `;
+  } else {
+    dashboardDiv.innerHTML = `<p>Please <a href="/login.html">log in</a> to view your dashboard.</p>`;
+  }
+});
 </body>
 </html>
