@@ -99,23 +99,23 @@
     <h1>chara.<span class="vault">vault</span></h1>
   </div>
   <div class="header-right">
-    <a href="/profile.html" title="Profile" class="icon-link">
+    <a href="profile.html" title="Profile" class="icon-link">
       <i class="fas fa-user-circle"></i>
     </a>
-    <a href="/dashboard.html" title="Settings" class="icon-link">
+    <a href="dashboard.html" title="Settings" class="icon-link">
       <i class="fas fa-cog"></i>
     </a>
-    <a href="/notifications.html" title="Notifications" class="icon-link notification-icon">
+    <a href="notifications.html" title="Notifications" class="icon-link notification-icon">
       <i class="fas fa-bell"></i>
       <span class="notification-count" id="notifCount">0</span>
     </a>
     <div class="icon-link submit-dropdown" title="Upload">
       <i class="fas fa-plus-circle"></i>
       <div class="dropdown-menu">
-        <a href="/upload-art.html">Upload Art</a>
-        <a href="/upload-character.html">Upload Character</a>
-        <a href="/upload-world.html">Upload World</a>
-        <a href="/upload-story.html">Upload Story</a>
+        <a href="upload-art.html">Upload Art</a>
+        <a href="upload-character.html">Upload Character</a>
+        <a href="upload-world.html">Upload World</a>
+        <a href="upload-story.html">Upload Story</a>
       </div>
     </div>
   </div>
@@ -146,16 +146,4 @@
   onAuthStateChanged(auth, (user) => {
     if (user) {
       const notifRef = collection(db, "notifications");
-      const q = query(notifRef, where("userId", "==", user.uid), where("read", "==", false));
-      onSnapshot(q, (snapshot) => {
-        const count = snapshot.size;
-        if (count > 0) {
-          notifCount.textContent = count;
-          notifCount.style.display = "inline-block";
-        } else {
-          notifCount.style.display = "none";
-        }
-      });
-    }
-  });
-</script>
+      const q = query(notifRef, where("userId", "==", user.uid), where("read", "==",
