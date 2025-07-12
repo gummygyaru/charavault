@@ -22,6 +22,7 @@
       box-sizing: border-box;
       position: sticky;
       top: 0;
+      overflow-y: auto;
     }
 
     aside h2 {
@@ -49,11 +50,20 @@
       text-decoration: underline;
     }
 
+    /* New container for user HTML blurb */
+    #custom-sidebar-html {
+      margin-top: 2rem;
+      color: white;
+      font-size: 0.9rem;
+      line-height: 1.3;
+    }
+
     .container {
       flex-grow: 1;
       padding: 2rem;
       max-width: 900px;
       margin: auto;
+      overflow-y: auto;
     }
 
     .profile {
@@ -136,6 +146,11 @@
       <li><a href="profile.html">Profile</a></li>
       <li><a href="stats.html">Stats</a></li>
     </ul>
+
+    <!-- User custom sidebar HTML blurb -->
+    <div id="custom-sidebar-html">
+      <!-- Custom sidebar content loads here -->
+    </div>
   </aside>
 
   <div class="container">
@@ -175,6 +190,61 @@
     const username = params.get("user")?.toLowerCase();
     const contentDiv = document.getElementById("content");
     const charGallery = document.getElementById("characterGallery");
+    const sidebarDiv = document.getElementById("custom-sidebar-html");
+
+    // SANITIZE HTML function - allows only safe tags & attributes
+    // This is a simple sanitizer: allows <p>, <b>, <i>, <u>, <ul>, <ol>, <li>, <a href>
+    function sanitizeHTML(input) {
+      const doc = new DOMParser().parseFromString(input, 'text/html');
+      const whitelist = ['P', 'B', 'I', 'U', 'UL', 'OL', 'LI', 'A'];
+
+      function cleanNode(node) {
+        // Remove disallowed nodes
+        if (!whitelist.includes(node.nodeName)) {
+          // If text node, keep text
+          if (node.nodeType === Node.TEXT_NODE) {
+            return document.createTextNode(node.textContent);
+          }
+          // Otherwise remove
+          return document.createTextNode('');
+        }
+
+        // For <a>, keep only href attribute, and validate it
+        if (node.nodeName === 'A') {
+          const href = node.getAttribute('href');
+          if (!href || (!href.startsWith('http://') && !href.startsWith('https://'))) {
+            node.removeAttribute('href');
+          }
+          // Remove all other attributes
+          for (const attr of Array.from(node.attributes)) {
+            if (attr.name !== 'href') node.removeAttribute(attr.name);
+          }
+        } else {
+          // Remove all attributes for other tags
+          for (const attr of Array.from(node.attributes)) {
+            node.removeAttribute(attr.name);
+          }
+        }
+
+        // Clean child nodes recursively
+        for (const child of Array.from(node.childNodes)) {
+          const cleanedChild = cleanNode(child);
+          if (cleanedChild !== child) {
+            node.replaceChild(cleanedChild, child);
+          }
+        }
+
+        return node;
+      }
+
+      const cleanedBody = document.createDocumentFragment();
+      for (const node of Array.from(doc.body.childNodes)) {
+        cleanedBody.appendChild(cleanNode(node));
+      }
+      const container = document.createElement('div');
+      container.appendChild(cleanedBody);
+      return container.innerHTML;
+    }
 
     if (!username) {
       contentDiv.textContent = "⚠️ No username provided in URL.";
@@ -199,6 +269,13 @@
           <p><strong>Bio:</strong> ${data.bio || "No bio yet."}</p>
           <p><strong>Joined:</strong> ${data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : "Unknown"}</p>
         `;
+
+        // Sanitize and render user custom sidebar HTML blurb
+        if (data.sidebarHtml) {
+          sidebarDiv.innerHTML = sanitizeHTML(data.sidebarHtml);
+        } else {
+          sidebarDiv.innerHTML = "<p>No custom sidebar content.</p>";
+        }
 
         loadCharacters(userId);
       }
