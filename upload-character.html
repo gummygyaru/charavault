@@ -15,7 +15,7 @@
       background: white;
       padding: 2rem;
       border-radius: 8px;
-      max-width: 700px;
+      max-width: 800px;
       margin: auto;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
@@ -50,19 +50,72 @@
 </head>
 <body>
   <div class="form-container">
-    <h1>Submit Character</h1>
+    <h1>Create Character</h1>
     <form id="character-upload-form">
-      <label for="character-name">Character Name</label>
-      <input type="text" id="character-name" required />
+      <label for="avatar">Upload Avatar (Optional)</label>
+      <input type="file" id="avatar" accept="image/*" />
 
-      <label for="character-file">Upload Character Reference Image</label>
-      <input type="file" id="character-file" accept="image/*" required />
+      <h4 class="mt-4">Basics</h4>
+      <label for="name">Character Name</label>
+      <input type="text" id="name" required />
 
-      <label for="design-credit">Design Credit</label>
-      <input type="text" id="design-credit" placeholder="Username or external link" required />
+      <label for="category">Category</label>
+      <input type="text" id="category" placeholder="e.g., Human, Demon, Animal" />
 
-      <label for="description">Character Description</label>
-      <textarea id="description" rows="4" placeholder="Optional notes about the character..."></textarea>
+      <label for="folder">Folder</label>
+      <select id="folder">
+        <option value="unsorted">Unsorted</option>
+        <!-- Future: Load actual user folders -->
+      </select>
+
+      <label for="visibility">Visible to...</label>
+      <select id="visibility">
+        <option value="public">Everyone</option>
+        <option value="logged-in">Only Logged In Users</option>
+        <option value="private">Only Me</option>
+      </select>
+
+      <label for="tags">Tags</label>
+      <input type="text" id="tags" placeholder="Comma-separated" />
+
+      <div class="form-check mt-2">
+        <input class="form-check-input" type="checkbox" id="showOnFront" />
+        <label class="form-check-label" for="showOnFront">
+          Show my character on the front page & search
+        </label>
+      </div>
+
+      <h4 class="mt-4">Designer Credit</h4>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="iAmCreator" />
+        <label class="form-check-label" for="iAmCreator">I am the creator of this design</label>
+      </div>
+
+      <label for="onSiteCreator">On-Site Creator</label>
+      <input type="text" id="onSiteCreator" placeholder="Username (optional)" />
+
+      <label for="offSiteCreator">Off-Site Creator</label>
+      <input type="text" id="offSiteCreator" placeholder="URL or name (optional)" />
+
+      <label for="terms">Terms of Use</label>
+      <textarea id="terms" rows="3" placeholder="E.g., resale limits, species rules... (optional)"></textarea>
+
+      <h4 class="mt-4">Design Tradeability</h4>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="canTrade" />
+        <label class="form-check-label" for="canTrade">Can Trade</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="canSell" />
+        <label class="form-check-label" for="canSell">Can Sell</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="canGift" />
+        <label class="form-check-label" for="canGift">Can Gift</label>
+      </div>
+
+      <label for="character-image" class="mt-4">Upload Image (Optional)</label>
+      <input type="file" id="character-image" accept="image/*" />
 
       <button type="submit">Submit Character</button>
     </form>
@@ -104,33 +157,49 @@
         e.preventDefault();
         message.textContent = "Uploading...";
 
-        const fileInput = document.getElementById("character-file");
-        const file = fileInput.files[0];
+        const avatarFile = document.getElementById("avatar").files[0];
+        const imageFile = document.getElementById("character-image").files[0];
 
-        if (!file) {
-          message.textContent = "Please select a reference image.";
-          return;
-        }
+        let avatarURL = "";
+        let imageURL = "";
 
         try {
-          const storageRef = ref(storage, `characters/${user.uid}/${Date.now()}_${file.name}`);
-          await uploadBytes(storageRef, file);
-          const fileURL = await getDownloadURL(storageRef);
+          if (avatarFile) {
+            const avatarRef = ref(storage, `characters/${user.uid}/avatars/${Date.now()}_${avatarFile.name}`);
+            await uploadBytes(avatarRef, avatarFile);
+            avatarURL = await getDownloadURL(avatarRef);
+          }
+
+          if (imageFile) {
+            const imageRef = ref(storage, `characters/${user.uid}/images/${Date.now()}_${imageFile.name}`);
+            await uploadBytes(imageRef, imageFile);
+            imageURL = await getDownloadURL(imageRef);
+          }
 
           await addDoc(collection(db, "characters"), {
             uid: user.uid,
-            name: document.getElementById("character-name").value,
-            designCredit: document.getElementById("design-credit").value,
-            description: document.getElementById("description").value,
-            imageUrl: fileURL,
+            name: document.getElementById("name").value,
+            category: document.getElementById("category").value,
+            folder: document.getElementById("folder").value,
+            visibility: document.getElementById("visibility").value,
+            tags: document.getElementById("tags").value.split(',').map(tag => tag.trim()),
+            showOnFront: document.getElementById("showOnFront").checked,
+            iAmCreator: document.getElementById("iAmCreator").checked,
+            onSiteCreator: document.getElementById("onSiteCreator").value,
+            offSiteCreator: document.getElementById("offSiteCreator").value,
+            terms: document.getElementById("terms").value,
+            tradeable: document.getElementById("canTrade").checked,
+            sellable: document.getElementById("canSell").checked,
+            giftable: document.getElementById("canGift").checked,
+            avatarUrl: avatarURL,
+            imageUrl: imageURL,
             timestamp: serverTimestamp(),
-            confirmed: false, // require approval if not your design
           });
 
           message.textContent = "✅ Character submitted successfully!";
           form.reset();
         } catch (err) {
-          console.error("Error uploading character:", err);
+          console.error("Error submitting character:", err);
           message.textContent = "❌ Error: " + err.message;
         }
       });
