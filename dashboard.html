@@ -420,9 +420,10 @@
 
       <label for="site-theme">Site Theme</label>
       <select id="site-theme">
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
-        <option value="synthwave">Synthwave</option>
+        <option value="Fire Vault">Fire Vault</option>
+        <option value="Moon Vault">Moon Vault</option>
+        <option value="Ocean Vault">Ocean Vault</option>
+        <option value="Forest Vault">Forest Vault</option>
       </select>
 
       <label for="custom-css">Custom Theme CSS (only you see this)</label>
@@ -584,7 +585,7 @@ const profileBlurbHTML = `
             document.getElementById("username-input").value = userData.username || "";
             document.getElementById("dob").value = userData.dob || "";
             document.getElementById("email-input").value = authUser.email || "";
-            document.getElementById("site-theme").value = userData.siteTheme || "light";
+            document.getElementById("site-theme").value = userData.siteTheme || "style";
             document.getElementById("custom-css").value = userData.customCss || "";
           }
         });
