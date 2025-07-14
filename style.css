@@ -1,11 +1,38 @@
 /* === Global Styles === */
-body {
-  font-family: 'Cinzel', serif; /* Elegant fantasy serif font */
+html, body {
+  font-family: 'Cinzel', serif;
   background: radial-gradient(ellipse at top, #2b1b0f 0%, #120c07 100%);
   color: #fdf6e3;
   margin: 0;
   padding: 0;
   text-align: center;
+}
+
+/* Ensure default tags get the correct color */
+h1, h2, h3, h4, h5, h6 {
+  color: #fcd34d;
+  text-shadow: 0 0 4px #92400e;
+  margin-top: 1.5rem;
+}
+
+p, li, span, strong, em {
+  color: #fdf6e3;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+small {
+  color: #e0b26d;
+}
+
+a {
+  color: #fbbf24;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #fde68a;
+  text-decoration: underline;
 }
 
 /* === Header === */
@@ -17,7 +44,7 @@ header {
 }
 
 .vault {
-  color: #f97316; /* Ember orange */
+  color: #f97316;
   font-weight: bold;
   text-shadow: 0 0 10px #f59e0b;
 }
@@ -49,17 +76,7 @@ img {
   box-shadow: 0 0 10px rgba(255, 153, 0, 0.3);
 }
 
-/* === Links & Buttons === */
-a {
-  color: #fbbf24;
-  text-decoration: none;
-}
-
-a:hover {
-  color: #fde68a;
-  text-decoration: underline;
-}
-
+/* === Buttons === */
 button {
   background-color: #a16207;
   color: white;
@@ -77,16 +94,39 @@ button:hover {
   background-color: #f59e0b;
 }
 
-/* === Misc === */
-h1, h2, h3 {
+/* === Markdown-style page support === */
+.markdown-body {
+  background: transparent;
+  color: #fdf6e3;
+  padding: 1rem;
+  text-align: left;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
   color: #fcd34d;
   text-shadow: 0 0 4px #92400e;
 }
 
-small {
-  color: #e0b26d;
+.markdown-body p,
+.markdown-body li,
+.markdown-body code,
+.markdown-body blockquote {
+  color: #fdf6e3;
 }
 
+.markdown-body a {
+  color: #fbbf24;
+}
+
+.markdown-body a:hover {
+  color: #fde68a;
+}
+
+/* === Background Decorations === */
 .bg-decor {
   position: fixed;
   pointer-events: none;
