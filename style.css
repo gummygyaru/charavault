@@ -86,3 +86,49 @@ h1, h2, h3 {
 small {
   color: #e0b26d;
 }
+
+.bg-decor {
+  position: fixed;
+  pointer-events: none;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+}
+
+.bg-decor img {
+  position: absolute;
+  opacity: 0.05;
+  filter: drop-shadow(0 0 10px #000);
+  max-width: 300px;
+  user-select: none;
+}
+
+/* Dragon Styling */
+.bg-dragon.left {
+  top: 0;
+  left: 0;
+  transform: rotate(-10deg);
+}
+
+.bg-dragon.right {
+  top: 0;
+  right: 0;
+  transform: scaleX(-1) rotate(-10deg);
+}
+
+/* Floating Key */
+.bg-key {
+  top: 40%;
+  left: 20px;
+  max-width: 150px;
+  transform: rotate(25deg);
+}
+
+/* Vault Door */
+.bg-vault {
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 400px;
+}
+
