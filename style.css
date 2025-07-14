@@ -215,6 +215,18 @@ ul, ul li {
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.7);
 }
+a {
+  color: #fcd34d; /* soft golden yellow */
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+a:hover {
+  color: #fde68a; /* lighter gold on hover */
+  text-shadow: 0 0 8px #facc15; /* golden glow */
+  text-decoration: underline;
+}
 
 
 /* === Animations === */
