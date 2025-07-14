@@ -181,6 +181,24 @@ button:hover {
   animation-duration: 4s;
 }
 
+button {
+  background: linear-gradient(to bottom right, #f59e0b, #7c2d12); /* orange to brown */
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #3b1d0c; /* dark brown outline */
+  border-radius: 8px;
+  font-family: 'Cinzel', serif;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 10px #facc15; /* outer yellow glow */
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  background: linear-gradient(to bottom right, #fbbf24, #78350f); /* lighter orange to deeper brown */
+  box-shadow: 0 0 16px #fde68a;
+}
+
 /* Header text white */
 header, header * {
   color: white !important;
