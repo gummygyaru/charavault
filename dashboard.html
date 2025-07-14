@@ -152,6 +152,8 @@
 <html lang="en">
 <head>
 <script type="module" src="layout.js" defer></script>
+  <link id="theme-style" rel="stylesheet" href="style.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dashboard - chara.vault</title>
@@ -793,5 +795,40 @@ onAuthStateChanged(auth, async (user) => {
     dashboardDiv.innerHTML = `<p>Please <a href="/login.html">log in</a> to view your dashboard.</p>`;
   }
 });
+
+    // Add theme switching logic
+    function setTheme(theme) {
+      const themeLink = document.getElementById("theme-style");
+      switch (theme) {
+        case "fire":
+          themeLink.href = "theme-fire.css";
+          break;
+        case "moon":
+          themeLink.href = "theme-moon.css";
+          break;
+        case "ocean":
+          themeLink.href = "theme-ocean.css";
+          break;
+        case "forest":
+          themeLink.href = "theme-forest.css";
+          break;
+        default:
+          themeLink.href = "style.css";
+      }
+      localStorage.setItem("selectedTheme", theme);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("selectedTheme") || "fire";
+      const themeSelector = document.getElementById("site-theme");
+      if (themeSelector) {
+        themeSelector.value = savedTheme;
+        setTheme(savedTheme);
+
+        themeSelector.addEventListener("change", (e) => {
+          setTheme(e.target.value);
+        });
+      }
+    });
 </body>
 </html>
