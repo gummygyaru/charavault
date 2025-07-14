@@ -1,12 +1,12 @@
 /* === Global Styles === */
 html, body {
-  font-family: 'Cinzel', serif;
-  background: radial-gradient(ellipse at top, #2b1b0f 0%, #120c07 100%);
+  background: linear-gradient(to bottom, #1a0e03, #2b1b0f) !important;
+  font-family: 'Cinzel', serif !important;
   color: #fdf6e3;
   margin: 0;
   padding: 0;
-  text-align: center;
 }
+
 
 /* === Typography === */
 h1, h2, h3, h4, h5, h6 {
