@@ -181,6 +181,17 @@ button:hover {
   animation-duration: 4s;
 }
 
+/* Header text white */
+header, header * {
+  color: white !important;
+}
+
+/* Unordered list text yellow */
+ul, ul li {
+  color: #fcd34d; /* yellow shade */
+}
+
+
 /* === Animations === */
 @keyframes floatLeft {
   0%, 100% { transform: rotate(-10deg) translateY(0px); }
