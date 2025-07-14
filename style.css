@@ -8,7 +8,7 @@ html, body {
   text-align: center;
 }
 
-/* Ensure default tags get the correct color */
+/* === Typography === */
 h1, h2, h3, h4, h5, h6 {
   color: #fcd34d;
   text-shadow: 0 0 4px #92400e;
@@ -25,13 +25,17 @@ small {
   color: #e0b26d;
 }
 
+/* === Links === */
 a {
-  color: #fbbf24;
+  color: #fcd34d;
   text-decoration: none;
+  font-weight: bold;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
 }
 
 a:hover {
   color: #fde68a;
+  text-shadow: 0 0 8px #facc15;
   text-decoration: underline;
 }
 
@@ -41,12 +45,20 @@ header {
   padding: 2rem 1rem;
   border-bottom: 4px solid #a16207;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  color: white;
 }
 
-.vault {
-  color: #f97316;
-  font-weight: bold;
-  text-shadow: 0 0 10px #f59e0b;
+header * {
+  color: white !important;
+}
+
+/* === Container === */
+.container {
+  background: linear-gradient(135deg, #1a0e03, #3c2207);
+  color: #fcd34d;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.7);
 }
 
 /* === Character Card === */
@@ -78,23 +90,24 @@ img {
 
 /* === Buttons === */
 button {
-  background-color: #a16207;
+  background: linear-gradient(to bottom right, #f59e0b, #7c2d12);
   color: white;
   padding: 0.75rem 1.5rem;
-  border: none;
+  border: 2px solid #3b1d0c;
   border-radius: 8px;
   font-family: 'Cinzel', serif;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-  transition: background 0.2s ease;
+  box-shadow: 0 0 10px #facc15;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 button:hover {
-  background-color: #f59e0b;
+  background: linear-gradient(to bottom right, #fbbf24, #78350f);
+  box-shadow: 0 0 16px #fde68a;
 }
 
-/* === Markdown-style page support === */
+/* === Markdown-style Support === */
 .markdown-body {
   background: transparent;
   color: #fdf6e3;
@@ -107,7 +120,7 @@ button:hover {
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3 {
-  color: #fcd34d;
+  color: #fcd34d !important;
   text-shadow: 0 0 4px #92400e;
 }
 
@@ -115,18 +128,31 @@ button:hover {
 .markdown-body li,
 .markdown-body code,
 .markdown-body blockquote {
-  color: #fdf6e3;
+  color: #fdf6e3 !important;
 }
 
 .markdown-body a {
-  color: #fbbf24;
+  color: #fbbf24 !important;
 }
 
 .markdown-body a:hover {
-  color: #fde68a;
+  color: #fde68a !important;
+  text-shadow: 0 0 8px #facc15;
 }
 
-/* === Background Decorations === */
+.markdown-body ul,
+.markdown-body ul li {
+  color: #fcd34d !important;
+}
+
+/* === Vault Branding === */
+.vault {
+  color: #f97316;
+  font-weight: bold;
+  text-shadow: 0 0 10px #f59e0b;
+}
+
+/* === Decorative Background Elements === */
 .bg-decor {
   position: fixed;
   pointer-events: none;
@@ -146,7 +172,6 @@ button:hover {
   animation-timing-function: ease-in-out;
 }
 
-/* Dragon Styling */
 .bg-dragon.left {
   top: 0;
   left: 0;
@@ -161,7 +186,6 @@ button:hover {
   animation-name: floatRight;
 }
 
-/* Floating Key */
 .bg-key {
   top: 40%;
   left: 20px;
@@ -171,7 +195,6 @@ button:hover {
   animation-duration: 10s;
 }
 
-/* Vault Door */
 .bg-vault {
   bottom: -40px;
   left: 50%;
@@ -180,54 +203,6 @@ button:hover {
   animation-name: pulseVault;
   animation-duration: 4s;
 }
-
-button {
-  background: linear-gradient(to bottom right, #f59e0b, #7c2d12); /* orange to brown */
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: 2px solid #3b1d0c; /* dark brown outline */
-  border-radius: 8px;
-  font-family: 'Cinzel', serif;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 0 10px #facc15; /* outer yellow glow */
-  transition: background 0.2s ease, box-shadow 0.2s ease;
-}
-
-button:hover {
-  background: linear-gradient(to bottom right, #fbbf24, #78350f); /* lighter orange to deeper brown */
-  box-shadow: 0 0 16px #fde68a;
-}
-
-/* Header text white */
-header, header * {
-  color: white !important;
-}
-
-/* Unordered list text yellow */
-ul, ul li {
-  color: #fcd34d; /* yellow shade */
-}
-.container {
-  background: linear-gradient(135deg, #1a0e03, #3c2207);
-  color: #fcd34d; /* keep the yellow text consistent */
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.7);
-}
-a {
-  color: #fcd34d; /* soft golden yellow */
-  text-decoration: none;
-  font-weight: bold;
-  transition: color 0.2s ease, text-shadow 0.2s ease;
-}
-
-a:hover {
-  color: #fde68a; /* lighter gold on hover */
-  text-shadow: 0 0 8px #facc15; /* golden glow */
-  text-decoration: underline;
-}
-
 
 /* === Animations === */
 @keyframes floatLeft {
