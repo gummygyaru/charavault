@@ -190,6 +190,13 @@ header, header * {
 ul, ul li {
   color: #fcd34d; /* yellow shade */
 }
+.container {
+  background: linear-gradient(135deg, #1a0e03, #3c2207);
+  color: #fcd34d; /* keep the yellow text consistent */
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+}
 
 
 /* === Animations === */
