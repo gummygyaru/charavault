@@ -17,7 +17,7 @@ title: Login
 </form>
 
 <p id="message"></p>
-<p class="link">Don't have an account? <a href="register.html">Register</a></p>
+<p class="link">Don't have an account? <a href="{{ '/register.html' | relative_url }}">Register</a></p>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
@@ -45,7 +45,7 @@ title: Login
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      window.location.href = "/dashboard.html";
+      window.location.href = "{{ '/dashboard.html' | relative_url }}";
     }
   });
 
@@ -60,11 +60,10 @@ title: Login
       await signInWithEmailAndPassword(auth, email, password);
       messageEl.textContent = "🎉 Logged in!";
       messageEl.classList.add("success");
-      window.location.href = "dashboard.html";
+      window.location.href = "{{ '/dashboard.html' | relative_url }}";
     } catch (error) {
       messageEl.textContent = "⚠️ " + error.message;
       messageEl.classList.remove("success");
     }
   });
 </script>
-
