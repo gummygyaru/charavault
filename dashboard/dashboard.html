@@ -9,7 +9,7 @@ title: Dashboard
 </header>
 
 <div class="dashboard">
-<script type="module" src="layout.js" defer></script>
+  <script type="module" src="{{ '/assets/js/layout.js' | relative_url }}" defer></script>
   <aside>
     <h2>Profile</h2>
     <ul>
@@ -59,7 +59,7 @@ title: Dashboard
     apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
     authDomain: "charavault-e8cf5.firebaseapp.com",
     projectId: "charavault-e8cf5",
-    storageBucket: "charavault-e8cf5.firebasestorage.app",
+    storageBucket: "charavault-e8cf5.appspot.com",
     messagingSenderId: "385710051091",
     appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
     measurementId: "G-JNLB26DXJC"
@@ -79,18 +79,19 @@ title: Dashboard
   const savedTheme = localStorage.getItem("theme") || "fire-vault";
   const link = document.createElement("link");
   link.rel = "stylesheet";
-  link.href = `/assets/css/themes/${savedTheme}.css`;
+  link.href = "{{ '/assets/css/themes/' | relative_url }}" + savedTheme + ".css";
   document.head.appendChild(link);
 
-  // Load user info
-  onAuthStateChanged(auth, async (user) => {
+  // Redirect to login if not authenticated
+  onAuthStateChanged(auth, (user) => {
     if (user) {
       usernameDisplay.textContent = user.displayName || user.email || "User";
       usernameSpan.textContent = user.displayName || "Unknown";
       emailSpan.textContent = user.email || "Unknown";
       lastLoginSpan.textContent = user.metadata.lastSignInTime || "Unknown";
     } else {
-      window.location.href = "/login/";
+      // Redirect back to login page - fix path here:
+      window.location.href = "{{ '/login.html' | relative_url }}";
     }
   });
 
@@ -99,6 +100,7 @@ title: Dashboard
     mainContent.innerHTML = "<p>Loading...</p>";
     const file = `${page}.html`;
     try {
+      // Since you are in /dashboard/, load subpages relative to current folder
       const response = await fetch(`./${file}`);
       if (!response.ok) throw new Error("Page not found");
       const html = await response.text();
@@ -128,13 +130,13 @@ title: Dashboard
     });
   });
 
-  // Load correct page on hash change
+  // Load page on hashchange
   window.addEventListener("hashchange", () => {
     const page = window.location.hash.substring(1);
     if (page) loadPage(page);
   });
 
-  // Load correct page on initial load (if any hash present)
+  // Load page on initial load (if hash present)
   const initialPage = window.location.hash.substring(1);
   if (initialPage) {
     loadPage(initialPage);
