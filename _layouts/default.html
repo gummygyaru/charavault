@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ page.title }}</title>
+  <link rel="icon" href="assets/images/favicon.png" />
+
+  <!-- Dynamic theme loader -->
+  <link id="theme-stylesheet" rel="stylesheet" href="" />
+  <noscript>
+    <link rel="stylesheet" href="assets/css/themes/fire-vault.css" />
+  </noscript>
+
+  <!-- Scripts -->
+  <script>
+    // Set theme on page load
+    document.addEventListener("DOMContentLoaded", function () {
+      const selectedTheme = localStorage.getItem("theme") || "fire-vault";
+      const stylesheet = document.getElementById("theme-stylesheet");
+      // Use relative path for best compatibility (adjust if your site uses a custom base URL)
+      if (stylesheet) {
+        stylesheet.href = "assets/css/themes/" + selectedTheme + ".css";
+      }
+    });
+  </script>
+  <script src="assets/js/layout.js" defer></script>
+</head>
+<body>
+  {% include header.html %}
+  <main>
+    {{ content }}
+  </main>
+  {% include footer.html %}
+</body>
+</html>

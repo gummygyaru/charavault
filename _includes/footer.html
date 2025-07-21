@@ -1,0 +1,45 @@
+<footer style="
+  background-color: #f1f5f9;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+  color: #555;
+  border-top: 1px solid #ccc;
+">
+  <div id="footer-info">
+    <span id="users-online">0 Users Online</span> • 
+    <span id="server-time">--:-- --</span>
+  </div>
+  <div style="margin-top: 0.5rem;">
+    <a href="/about.html">About</a> |
+    <a href="/faq.html">FAQ</a> |
+    <a href="/help.html">Help Desk</a> |
+    <a href="/rules.html">Rules</a> |
+    <a href="/tos.html">TOS</a>
+  </div>
+</footer>
+
+<script>
+  // Update server time every second
+  function updateTime() {
+    const now = new Date();
+    // Format time as HH:MM AM/PM
+    const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+    const timeString = now.toLocaleTimeString([], options);
+    document.getElementById('server-time').textContent = timeString;
+  }
+
+  // Mock users online count — replace with real data source later
+  function updateUsersOnline() {
+    // Random number between 5 and 50
+    const users = Math.floor(Math.random() * 46) + 5;
+    document.getElementById('users-online').textContent = `${users} Users Online`;
+  }
+
+  updateTime();
+  updateUsersOnline();
+
+  setInterval(updateTime, 1000);          // Update time every second
+  setInterval(updateUsersOnline, 10000);  // Update users count every 10 seconds
+</script>
+

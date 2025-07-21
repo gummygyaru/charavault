@@ -1,0 +1,6 @@
+title: chara.vault
+description: A character storage and customization site.
+baseurl: "" # Leave blank unless you're hosting in a subfolder
+url: "https://gummygyaru.github.io" # Your actual GitHub Pages URL
+theme: null
+markdown: kramdown

@@ -1,0 +1,82 @@
+---
+layout: default
+title: Register for chara.vault
+---
+
+<h2>Register for chara.<span style="color:#3b82f6;">vault</span></h2>
+
+<form id="register-form">
+  <input type="email" id="register-email" placeholder="Email" required />
+  <input type="password" id="register-password" placeholder="Password" required />
+  <button type="submit">Create Account</button>
+</form>
+
+<p id="message"></p>
+<p id="spam-note">📫 Can’t find the email? Be sure to check your spam folder!</p>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    sendEmailVerification,
+  } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    serverTimestamp,
+  } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
+    authDomain: "charavault-e8cf5.firebaseapp.com",
+    projectId: "charavault-e8cf5",
+    storageBucket: "charavault-e8cf5.firebasestorage.app",
+    messagingSenderId: "385710051091",
+    appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
+    measurementId: "G-JNLB26DXJC",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const messageEl = document.getElementById("message");
+  const spamNote = document.getElementById("spam-note");
+
+  document.getElementById("register-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("register-email").value;
+    const password = document.getElementById("register-password").value;
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await sendEmailVerification(user);
+
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+        username: email.split("@")[0].toLowerCase(),
+        bio: "",
+        avatarUrl: "",
+        createdAt: serverTimestamp(),
+      });
+
+      messageEl.textContent = "🎉 Account created! Verification email sent. Please check your inbox.";
+      messageEl.classList.add("success");
+      spamNote.style.display = "block";
+
+      setTimeout(() => {
+        window.location.href = "/login/";
+      }, 4000);
+
+    } catch (error) {
+      messageEl.textContent = "⚠️ " + error.message;
+      messageEl.classList.remove("success");
+      spamNote.style.display = "none";
+    }
+  });
+</script>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Submit Character - chara.vault</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: #f4f4f8;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      padding: 2rem;
+    }
+    .form-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 800px;
+      margin: auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #9333ea;
+      margin-bottom: 1rem;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.25rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 2rem;
+      background: #9333ea;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #7e22ce;
+    }
+    .progress-bar {
+      margin-top: 1rem;
+      height: 20px;
+      background: #ddd;
+      border-radius: 6px;
+      overflow: hidden;
+      display: none;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: #9333ea;
+      transition: width 0.3s ease;
+    }
+    .credit-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .credit-modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 90%;
+    }
+    .credit-modal-content h5 {
+      margin-bottom: 1rem;
+    }
+  </style>
+
+  <!-- Dynamic theme stylesheet -->
+  <link id="themeStylesheet" rel="stylesheet" href="" />
+</head>
+<body>
+  <div class="form-container" id="formContainer" style="display:none;">
+    <h1>Create Character</h1>
+    <form id="character-upload-form">
+      <label for="avatar">Upload Avatar (Optional)</label>
+      <input type="file" id="avatar" accept="image/*" />
+
+      <h4 class="mt-4">Basics</h4>
+      <label for="name">Character Name</label>
+      <input type="text" id="name" required />
+
+      <label for="category">Category</label>
+      <input type="text" id="category" placeholder="e.g., Human, Demon, Animal" />
+
+      <label for="folder">Folder</label>
+      <select id="folder">
+        <option value="unsorted">Unsorted</option>
+      </select>
+
+      <label for="visibility">Visible to...</label>
+      <select id="visibility">
+        <option value="public">Everyone</option>
+        <option value="logged-in">Only Logged In Users</option>
+        <option value="private">Only Me</option>
+      </select>
+
+      <label for="tags">Tags</label>
+      <input type="text" id="tags" placeholder="Comma-separated" />
+
+      <div class="form-check mt-2">
+        <input class="form-check-input" type="checkbox" id="showOnFront" />
+        <label class="form-check-label" for="showOnFront">
+          Show my character on the front page & search
+        </label>
+      </div>
+
+      <h4 class="mt-4">Designer Credit</h4>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="iAmCreator" />
+        <label class="form-check-label" for="iAmCreator">I am the creator of this design</label>
+      </div>
+
+      <label for="onSiteCreator">On-Site Creator</label>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <input type="text" id="onSiteCreator" placeholder="Username (optional)" />
+        <button type="button" onclick="openCreditModal()">Credit Someone</button>
+      </div>
+
+      <label for="offSiteCreator">Off-Site Creator</label>
+      <input type="text" id="offSiteCreator" placeholder="URL or name (optional)" />
+
+      <label for="terms">Terms of Use</label>
+      <textarea id="terms" rows="3" placeholder="E.g., resale limits, species rules... (optional)"></textarea>
+
+      <h4 class="mt-4">Design Tradeability</h4>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="canTrade" />
+        <label class="form-check-label" for="canTrade">Can Trade</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="canSell" />
+        <label class="form-check-label" for="canSell">Can Sell</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="canGift" />
+        <label class="form-check-label" for="canGift">Can Gift</label>
+      </div>
+
+      <label for="character-image" class="mt-4">Upload Image (Optional)</label>
+      <input type="file" id="character-image" accept="image/*" />
+
+      <div class="progress-bar" id="uploadProgress">
+        <div class="progress-bar-fill" id="uploadProgressFill"></div>
+      </div>
+
+      <button type="submit">Submit Character</button>
+    </form>
+    <div id="upload-message" style="margin-top: 1rem; font-weight: bold;"></div>
+  </div>
+
+  <!-- Modal -->
+  <div class="credit-modal" id="creditModal">
+    <div class="credit-modal-content">
+      <h5>Credit Someone</h5>
+      <input type="text" id="creditSearch" placeholder="Search username..." class="form-control mb-2" />
+      <ul id="creditResults" style="list-style:none; padding-left: 0;"></ul>
+      <button class="btn btn-secondary mt-2" onclick="closeCreditModal()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    function openCreditModal() {
+      document.getElementById("creditModal").style.display = "flex";
+    }
+    function closeCreditModal() {
+      document.getElementById("creditModal").style.display = "none";
+    }
+
+    document.getElementById("creditSearch").addEventListener("input", async (e) => {
+      const value = e.target.value.toLowerCase();
+      const creditResults = document.getElementById("creditResults");
+      creditResults.innerHTML = "<li>Searching...</li>";
+
+      try {
+        const res = await fetch(`/usernames.json`); // static username list
+        const users = await res.json();
+        const filtered = users.filter(u => u.toLowerCase().includes(value)).slice(0, 5);
+        creditResults.innerHTML = filtered.map(u => `<li><button onclick="selectCredit('${u}')" class="btn btn-sm btn-outline-primary mb-1">${u}</button></li>`).join('');
+      } catch {
+        creditResults.innerHTML = "<li>Error loading usernames.</li>";
+      }
+    });
+
+    function selectCredit(username) {
+      document.getElementById("onSiteCreator").value = username;
+      closeCreditModal();
+    }
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-storage.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
+      authDomain: "charavault-e8cf5.firebaseapp.com",
+      projectId: "charavault-e8cf5",
+      storageBucket: "charavault-e8cf5.appspot.com",
+      messagingSenderId: "385710051091",
+      appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
+      measurementId: "G-JNLB26DXJC",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+    const auth = getAuth(app);
+
+    const form = document.getElementById("character-upload-form");
+    const message = document.getElementById("upload-message");
+    const formContainer = document.getElementById("formContainer");
+    const uploadProgress = document.getElementById("uploadProgress");
+    const uploadProgressFill = document.getElementById("uploadProgressFill");
+
+    // Load and apply theme from localStorage
+    function applyTheme() {
+      const themeName = localStorage.getItem("charaVaultTheme") || "default";
+      document.getElementById("themeStylesheet").href = `/assets/css/themes/${themeName}.css`;
+    }
+    applyTheme();
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        message.textContent = "You must be logged in to submit a character.";
+        form.style.display = "none";
+        return;
+      }
+      formContainer.style.display = "block";
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        message.textContent = "";
+        uploadProgress.style.display = "block";
+        uploadProgressFill.style.width = "0%";
+
+        const avatarFile = document.getElementById("avatar").files[0];
+        const imageFile = document.getElementById("character-image").files[0];
+
+        let avatarURL = "";
+        let imageURL = "";
+
+        try {
+          // Upload avatar with progress
+          if (avatarFile) {
+            const avatarRef = ref(storage, `characters/${user.uid}/avatars/${Date.now()}_${avatarFile.name}`);
+            const avatarUploadTask = uploadBytesResumable(avatarRef, avatarFile);
+
+            await new Promise((resolve, reject) => {
+              avatarUploadTask.on("state_changed",
+                (snapshot) => {
+                  const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 50;
+                  uploadProgressFill.style.width = progress + "%";
+                },
+                reject,
+                async () => {
+                  avatarURL = await getDownloadURL(avatarUploadTask.snapshot.ref);
+                  resolve();
+                }
+              );
+            });
+          }
+
+          // Upload character image with progress
+          if (imageFile) {
+            const imageRef = ref(storage, `characters/${user.uid}/images/${Date.now()}_${imageFile.name}`);
+            const imageUploadTask = uploadBytesResumable(imageRef, imageFile);
+
+            await new Promise((resolve, reject) => {
+              imageUploadTask.on("state_changed",
+                (snapshot) => {
+                  // Progress continues from 50% to 100%
+                  const progress = 50 + (snapshot.bytesTransferred / snapshot.totalBytes) * 50;
+                  uploadProgressFill.style.width = progress + "%";
+                },
+                reject,
+                async () => {
+                  imageURL = await getDownloadURL(imageUploadTask.snapshot.ref);
+                  resolve();
+                }
+              );
+            });
+          }
+
+          // Prepare tags array (trim and remove empties)
+          const rawTags = document.getElementById("tags").value.split(",");
+          const tags = rawTags.map(t => t.trim()).filter(t => t.length > 0);
+
+          // Add Firestore document
+          await addDoc(collection(db, "characters"), {
+            userId: user.uid,
+            name: document.getElementById("name").value,
+            category: document.getElementById("category").value,
+            folder: document.getElementById("folder").value,
+            visibility: document.getElementById("visibility").value,
+            tags,
+            showOnFront: document.getElementById("showOnFront").checked,
+            iAmCreator: document.getElementById("iAmCreator").checked,
+            onSiteCreator: document.getElementById("onSiteCreator").value || null,
+            offSiteCreator: document.getElementById("offSiteCreator").value || null,
+            terms: document.getElementById("terms").value || null,
+            tradeable: document.getElementById("canTrade").checked,
+            sellable: document.getElementById("canSell").checked,
+            giftable: document.getElementById("canGift").checked,
+            avatarUrl: avatarURL,
+            imageUrl: imageURL,
+            createdAt: serverTimestamp(),
+          });
+
+          message.textContent = "✅ Character submitted successfully!";
+          message.style.color = "green";
+          uploadProgressFill.style.width = "100%";
+
+          // Reset form & progress after delay
+          setTimeout(() => {
+            form.reset();
+            uploadProgress.style.display = "none";
+            uploadProgressFill.style.width = "0%";
+            message.textContent = "";
+          }, 3000);
+
+        } catch (err) {
+          console.error("Error submitting character:", err);
+          message.textContent = "❌ Error: " + err.message;
+          message.style.color = "red";
+          uploadProgress.style.display = "none";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

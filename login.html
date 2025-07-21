@@ -1,0 +1,70 @@
+---
+layout: default
+title: Login
+---
+
+<link rel="stylesheet" href="{{ '/assets/css/themes/fire-vault.css' | relative_url }}">
+<script src="{{ '/assets/js/layout.js' | relative_url }}"></script>
+<link rel="icon" href="{{ '/assets/images/favicon.png' | relative_url }}" type="image/png">
+
+<h2>Login to chara.<span class="vault-accent">vault</span></h2>
+
+<form id="login-form">
+  <input type="email" id="login-email" placeholder="Email" required />
+  <input type="password" id="login-password" placeholder="Password" required />
+  <label><input type="checkbox" id="stay-signed-in" /> Stay signed in?</label>
+  <button type="submit">Log In</button>
+</form>
+
+<p id="message"></p>
+<p class="link">Don't have an account? <a href="register.html">Register</a></p>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import {
+    getAuth,
+    setPersistence,
+    browserLocalPersistence,
+    browserSessionPersistence,
+    signInWithEmailAndPassword,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
+    authDomain: "charavault-e8cf5.firebaseapp.com",
+    projectId: "charavault-e8cf5",
+    storageBucket: "charavault-e8cf5.appspot.com",
+    messagingSenderId: "385710051091",
+    appId: "1:385710051091:web:a38d5ac0047ec32a0914e6"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const messageEl = document.getElementById("message");
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      window.location.href = "dashboard.html";
+    }
+  });
+
+  document.getElementById("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+    const staySignedIn = document.getElementById("stay-signed-in").checked;
+
+    try {
+      await setPersistence(auth, staySignedIn ? browserLocalPersistence : browserSessionPersistence);
+      await signInWithEmailAndPassword(auth, email, password);
+      messageEl.textContent = "🎉 Logged in!";
+      messageEl.classList.add("success");
+      window.location.href = "dashboard.html";
+    } catch (error) {
+      messageEl.textContent = "⚠️ " + error.message;
+      messageEl.classList.remove("success");
+    }
+  });
+</script>
+

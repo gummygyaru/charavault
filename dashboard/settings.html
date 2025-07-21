@@ -1,0 +1,33 @@
+    const settingsPageHTML = `
+      <h2>Account Settings</h2>
+      <label for="avatar">Change Avatar (png, jpeg, gif, max 200x200)</label>
+      <input type="file" id="avatar" accept="image/png, image/jpeg, image/gif" />
+      <img id="avatar-preview" alt="Avatar Preview" />
+
+      <label for="username">Username (change once a month only)</label>
+      <input type="text" id="username-input" placeholder="Your username" />
+
+      <label for="dob">Date of Birth</label>
+      <input type="date" id="dob" />
+
+      <label for="email">Email</label>
+      <input type="email" id="email-input" placeholder="Your email" />
+      <button id="change-email-btn">Change Email (verification sent)</button>
+
+      <label>Password</label>
+      <button id="reset-password-btn">Send Password Reset Email</button>
+
+      <label for="site-theme">Site Theme</label>
+      <select id="site-theme">
+        <option value="Fire Vault">Fire Vault</option>
+        <option value="Moon Vault">Moon Vault</option>
+        <option value="Ocean Vault">Ocean Vault</option>
+        <option value="Forest Vault">Forest Vault</option>
+      </select>
+
+      <label for="custom-css">Custom Theme CSS (only you see this)</label>
+      <textarea id="custom-css" rows="6" placeholder="Enter your custom CSS here..."></textarea>
+
+      <button id="save-btn">Save Settings</button>
+      <div id="message"></div>
+    `;

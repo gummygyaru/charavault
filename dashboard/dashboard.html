@@ -1,0 +1,142 @@
+---
+layout: default
+title: Dashboard
+---
+
+<header>
+  <h1>chara.<span class="vault">vault</span></h1>
+  <div id="usernameDisplay">Loading…</div>
+</header>
+
+<div class="dashboard">
+<script type="module" src="layout.js" defer></script>
+  <aside>
+    <h2>Profile</h2>
+    <ul>
+      <li><a href="#settings" data-page="settings">Settings</a></li>
+      <li><a href="#profile-content" data-page="profile-content">Profile Content</a></li>
+    </ul>
+
+    <h2>Characters</h2>
+    <ul>
+      <li><a href="#character-settings" data-page="character-settings">Character Settings</a></li>
+      <li><a href="#design-manager" data-page="design-manager">Design Manager</a></li>
+      <li><a href="#image-manager" data-page="image-manager">Image Manager</a></li>
+    </ul>
+
+    <h2>Interactions</h2>
+    <ul>
+      <li><a href="#subscribers" data-page="subscribers">Subscribers</a></li>
+      <li><a href="#favorites" data-page="favorites">Your Hoard</a></li>
+    </ul>
+
+    <h2>Account</h2>
+    <ul>
+      <li><a href="#inventory" data-page="inventory">Inventory</a></li>
+      <li><a href="#auth" data-page="auth">KeyHolders</a></li>
+      <li><a href="#subscribers" data-page="subscribers">Vaultmates</a></li>
+    </ul>
+  </aside>
+
+  <main id="main-content">
+    <div class="section-title">Welcome to your Dashboard</div>
+    <div class="info-box">
+      <p><strong>Username:</strong> <span id="username">Loading...</span></p>
+      <p><strong>Email:</strong> <span id="email">Loading...</span></p>
+      <p><strong>Last Login:</strong> <span id="lastLogin">Loading...</span></p>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js" defer></script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
+    authDomain: "charavault-e8cf5.firebaseapp.com",
+    projectId: "charavault-e8cf5",
+    storageBucket: "charavault-e8cf5.firebasestorage.app",
+    messagingSenderId: "385710051091",
+    appId: "1:385710051091:web:a38d5ac0047ec32a0914e6",
+    measurementId: "G-JNLB26DXJC"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  const mainContent = document.getElementById("main-content");
+  const usernameDisplay = document.getElementById("usernameDisplay");
+  const usernameSpan = document.getElementById("username");
+  const emailSpan = document.getElementById("email");
+  const lastLoginSpan = document.getElementById("lastLogin");
+
+  // Load theme dynamically
+  const savedTheme = localStorage.getItem("theme") || "fire-vault";
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = `/assets/css/themes/${savedTheme}.css`;
+  document.head.appendChild(link);
+
+  // Load user info
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      usernameDisplay.textContent = user.displayName || user.email || "User";
+      usernameSpan.textContent = user.displayName || "Unknown";
+      emailSpan.textContent = user.email || "Unknown";
+      lastLoginSpan.textContent = user.metadata.lastSignInTime || "Unknown";
+    } else {
+      window.location.href = "/login/";
+    }
+  });
+
+  // Load dashboard subpage
+  async function loadPage(page) {
+    mainContent.innerHTML = "<p>Loading...</p>";
+    const file = `${page}.html`;
+    try {
+      const response = await fetch(`./${file}`);
+      if (!response.ok) throw new Error("Page not found");
+      const html = await response.text();
+      mainContent.innerHTML = html;
+      document.title = `${page.replace(/-/g, ' ')} | Dashboard`;
+
+      if (page === "profile-content") {
+        window.updatePreview = function () {
+          const htmlContent = document.getElementById("profile-html").value;
+          document.getElementById("profile-preview").innerHTML = htmlContent;
+        };
+      }
+    } catch (error) {
+      mainContent.innerHTML = `<h2>Error loading page</h2><p>${error.message}</p>`;
+    }
+  }
+
+  // Handle nav clicks
+  document.querySelectorAll("aside a").forEach(link => {
+    link.addEventListener("click", e => {
+      e.preventDefault();
+      const page = link.getAttribute("data-page");
+      if (page) {
+        history.pushState({ page }, "", `#${page}`);
+        loadPage(page);
+      }
+    });
+  });
+
+  // Load correct page on hash change
+  window.addEventListener("hashchange", () => {
+    const page = window.location.hash.substring(1);
+    if (page) loadPage(page);
+  });
+
+  // Load correct page on initial load (if any hash present)
+  const initialPage = window.location.hash.substring(1);
+  if (initialPage) {
+    loadPage(initialPage);
+  }
+</script>

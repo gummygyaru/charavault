@@ -1,0 +1,35 @@
+const characterSettingsHTML = `
+    <div class="character-settings-container">
+        <h1>Character Management</h1>
+        <p>These settings apply to your character uploads and design defaults.</p>
+
+        <label for="design-tos">Global Design Terms of Use</label>
+        <textarea id="design-tos" placeholder="Enter your design TOS in HTML..."></textarea>
+
+        <label for="default-privacy">Default Character Privacy</label>
+        <select id="default-privacy">
+            <option value="private">Private</option>
+            <option value="public">Public</option>
+            <option value="key">Key Only</option>
+        </select>
+
+        <label for="default-listing">Default Character Listing</label>
+        <select id="default-listing">
+            <option value="private">Private</option>
+            <option value="public">Public</option>
+            <option value="key">Key Only</option>
+        </select>
+
+        <label>Default Design Tradeability</label>
+        <div style="margin-bottom: 1rem;">
+            <div><input type="checkbox" id="tradeable" /> <label for="tradeable">Tradeable</label></div>
+            <div><input type="checkbox" id="sellable" /> <label for="sellable">Sellable</label></div>
+            <div><input type="checkbox" id="giftable" /> <label for="giftable">Giftable</label></div>
+        </div>
+
+        <button class="btn-save" id="save-character-settings">Save Settings</button>
+        <div id="char-settings-message"></div>
+        </div>
+      </div>
+    `;
+
