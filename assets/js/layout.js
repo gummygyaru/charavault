@@ -155,4 +155,26 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // 🔁 Profile sidebar navigation logic
+  const navLinks = document.querySelectorAll(".profile-sidebar a[href^='#']");
+  const profileSections = document.querySelectorAll(".profile-main section");
+
+  if (navLinks.length && profileSections.length) {
+    navLinks.forEach(link => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        const targetId = link.getAttribute("href").substring(1);
+        profileSections.forEach(section => {
+          section.style.display = section.id === targetId ? "block" : "none";
+        });
+      });
+    });
+
+    // Show the first section by default
+    profileSections.forEach((section, idx) => {
+      section.style.display = idx === 0 ? "block" : "none";
+    });
+  }
 });
