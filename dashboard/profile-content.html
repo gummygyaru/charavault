@@ -1,64 +1,141 @@
-const profileBlurbHTML = `
-  <div class="profile-blurb-container">
-    <h1>Profile Blurb</h1>
-    <p>This HTML will be added to the sidebar of all your public user pages.</p>
-    <textarea id="profile-blurb-html" placeholder="Enter sidebar HTML here..." rows="10" style="width: 100%;"></textarea>
-    <button class="btn-save" id="save-profile-blurb">Save</button>
-    <div id="profile-blurb-message"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Profile Settings | chara.vault</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/assets/css/base.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"></script>
+  <script src="/assets/js/firebase-init.js" defer></script>
+</head>
+<body>
+  <main id="settings-content" style="padding: 2rem; max-width: 800px; margin: auto;">
 
-    <div class="character-profile-settings-container">
-      <h1>Character Profile Settings</h1>
-      <p>Customize global CSS and other settings applied to all your character pages.</p>
-      <label for="global-character-css">Global Characters CSS</label>
-      <textarea id="global-character-css" placeholder="Enter CSS here..." rows="10" style="width: 100%;"></textarea>
-      <button class="btn-save" id="save-global-character-css">Save</button>
-      <div id="global-character-css-message"></div>
-    </div>
-  </div>
-`;
+    <!-- Profile Blurb and Character CSS -->
+    <div class="profile-blurb-container">
+      <h1>Profile Blurb</h1>
+      <p>This HTML will be added to the sidebar of all your public user pages.</p>
+      <textarea id="profile-blurb-html" placeholder="Enter sidebar HTML here..." rows="10" style="width: 100%;"></textarea>
+      <button class="btn-save" id="save-profile-blurb">Save</button>
+      <div id="profile-blurb-message"></div>
 
-const profileContentHTML = `
-  <div class="profile-container">
-    <h1>Edit Profile</h1>
-    <p>This content will appear at the top of your public profile page. You can use HTML to style it however you like!</p>
-
-    <label for="profile-html">Your Profile HTML</label>
-    <textarea id="profile-html" placeholder="Paste your HTML here..."></textarea>
-
-    <button class="btn-save" onclick="updatePreview()">Preview</button>
-
-    <div class="preview-box mt-4">
-      <h5>Live Preview</h5>
-      <div id="profile-preview" style="padding: 1rem; border-top: 1px solid #ccc;"></div>
-    </div>
-    <button id="save-profile-html" class="btn-save">Save Profile</button>
-    <div id="profile-html-message"></div>
-  </div>
-`;
-
-const cssBlurbsHTML = profileBlurbHTML;
-
-const avatarSettingsHTML = `
-  <div class="avatar-settings-container">
-    <h1>Avatar Settings</h1>
-    <label for="avatar-upload">Upload Avatar (PNG, JPEG, GIF; max 200x200)</label><br/>
-    <input type="file" id="avatar-upload" accept="image/png, image/jpeg, image/gif" />
-    <img id="avatar-preview" alt="Avatar Preview" style="width: 200px; height: 200px; border-radius: 50%; border: 1px solid #ccc; margin-top: 0.5rem; object-fit: contain;" />
-
-    <h2 style="margin-top: 2rem;">Select Your Avatar Frame</h2>
-    <div id="frame-options" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
-      <img src="/frames/frame1.png" alt="Frame 1" data-frame="frame1" class="frame-option" style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent; border-radius: 50%;" />
-      <img src="/frames/frame2.png" alt="Frame 2" data-frame="frame2" class="frame-option" style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent; border-radius: 50%;" />
-      <img src="/frames/frame3.png" alt="Frame 3" data-frame="frame3" class="frame-option" style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent; border-radius: 50%;" />
+      <div class="character-profile-settings-container" style="margin-top: 2rem;">
+        <h1>Character Profile Settings</h1>
+        <p>Customize global CSS and other settings applied to all your character pages.</p>
+        <label for="global-character-css">Global Characters CSS</label>
+        <textarea id="global-character-css" placeholder="Enter CSS here..." rows="10" style="width: 100%;"></textarea>
+        <button class="btn-save" id="save-global-character-css">Save</button>
+        <div id="global-character-css-message"></div>
+      </div>
     </div>
 
-    <h3>Live Preview</h3>
-    <div style="position: relative; width: 200px; height: 200px;">
-      <img id="live-avatar-preview" src="" alt="Avatar Live Preview" style="width: 200px; height: 200px; border-radius: 50%; object-fit: contain; border: 1px solid #ccc;" />
-      <img id="live-frame-preview" src="/frames/frame1.png" alt="Frame Live Preview" style="position: absolute; top: 0; left: 0; width: 200px; height: 200px; pointer-events: none; border-radius: 50%;" />
+    <!-- Profile Content HTML Editor -->
+    <div class="profile-container" style="margin-top: 3rem;">
+      <h1>Edit Profile</h1>
+      <p>This content will appear at the top of your public profile page. You can use HTML to style it however you like!</p>
+      <label for="profile-html">Your Profile HTML</label>
+      <textarea id="profile-html" placeholder="Paste your HTML here..." rows="10" style="width: 100%;"></textarea>
+      <button class="btn-save" onclick="updatePreview()">Preview</button>
+
+      <div class="preview-box mt-4" style="margin-top: 1rem;">
+        <h5>Live Preview</h5>
+        <div id="profile-preview" style="padding: 1rem; border-top: 1px solid #ccc;"></div>
+      </div>
     </div>
 
-    <button id="save-avatar-settings" class="btn-save" style="margin-top: 1rem; background-color: #9333ea; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">Save Settings</button>
-    <div id="save-message" style="margin-top: 0.5rem; font-weight: bold;"></div>
-  </div>
-`;
+    <!-- Avatar Settings -->
+    <div class="avatar-settings-container" style="margin-top: 3rem;">
+      <h1>Avatar Settings</h1>
+      <label for="avatar-upload">Upload Avatar (PNG, JPEG, GIF; max 200x200)</label><br/>
+      <input type="file" id="avatar-upload" accept="image/png, image/jpeg, image/gif" />
+      <img id="avatar-preview" alt="Avatar Preview" style="width: 200px; height: 200px; border-radius: 50%; border: 1px solid #ccc; margin-top: 0.5rem; object-fit: contain;" />
+
+      <h2 style="margin-top: 2rem;">Select Your Avatar Frame</h2>
+      <div id="frame-options" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+        <img src="/frames/frame1.png" alt="Frame 1" data-frame="frame1" class="frame-option" style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent; border-radius: 50%;" />
+        <img src="/frames/frame2.png" alt="Frame 2" data-frame="frame2" class="frame-option" style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent; border-radius: 50%;" />
+        <img src="/frames/frame3.png" alt="Frame 3" data-frame="frame3" class="frame-option" style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent; border-radius: 50%;" />
+      </div>
+
+      <h3>Live Preview</h3>
+      <div style="position: relative; width: 200px; height: 200px;">
+        <img id="live-avatar-preview" src="" alt="Avatar Live Preview" style="width: 200px; height: 200px; border-radius: 50%; object-fit: contain; border: 1px solid #ccc;" />
+        <img id="live-frame-preview" src="/frames/frame1.png" alt="Frame Live Preview" style="position: absolute; top: 0; left: 0; width: 200px; height: 200px; pointer-events: none; border-radius: 50%;" />
+      </div>
+
+      <button id="save-avatar-settings" class="btn-save" style="margin-top: 1rem;">Save Settings</button>
+      <div id="save-message" style="margin-top: 0.5rem; font-weight: bold;"></div>
+    </div>
+
+  </main>
+
+  <script>
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+    let currentUser;
+
+    auth.onAuthStateChanged(async user => {
+      if (user) {
+        currentUser = user;
+        const doc = await db.collection("users").doc(user.uid).get();
+        const data = doc.data() || {};
+        document.getElementById("profile-blurb-html").value = data.profileBlurb || "";
+        document.getElementById("global-character-css").value = data.characterCSS || "";
+        document.getElementById("profile-html").value = data.profileHTML || "";
+        if (data.avatarURL) {
+          document.getElementById("avatar-preview").src = data.avatarURL;
+          document.getElementById("live-avatar-preview").src = data.avatarURL;
+        }
+        if (data.avatarFrame) {
+          document.getElementById("live-frame-preview").src = "/frames/" + data.avatarFrame + ".png";
+        }
+      }
+    });
+
+    document.getElementById("save-profile-blurb").onclick = async () => {
+      const val = document.getElementById("profile-blurb-html").value;
+      await db.collection("users").doc(currentUser.uid).set({ profileBlurb: val }, { merge: true });
+      document.getElementById("profile-blurb-message").textContent = "Saved!";
+    };
+
+    document.getElementById("save-global-character-css").onclick = async () => {
+      const val = document.getElementById("global-character-css").value;
+      await db.collection("users").doc(currentUser.uid).set({ characterCSS: val }, { merge: true });
+      document.getElementById("global-character-css-message").textContent = "Saved!";
+    };
+
+    function updatePreview() {
+      const html = document.getElementById("profile-html").value;
+      document.getElementById("profile-preview").innerHTML = html;
+      db.collection("users").doc(currentUser.uid).set({ profileHTML: html }, { merge: true });
+    }
+
+    document.getElementById("avatar-upload").onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const ref = storage.ref().child("avatars/" + currentUser.uid);
+      await ref.put(file);
+      const url = await ref.getDownloadURL();
+      document.getElementById("avatar-preview").src = url;
+      document.getElementById("live-avatar-preview").src = url;
+      await db.collection("users").doc(currentUser.uid).set({ avatarURL: url }, { merge: true });
+    };
+
+    document.querySelectorAll(".frame-option").forEach(img => {
+      img.onclick = () => {
+        const frame = img.dataset.frame;
+        document.getElementById("live-frame-preview").src = "/frames/" + frame + ".png";
+        db.collection("users").doc(currentUser.uid).set({ avatarFrame: frame }, { merge: true });
+      };
+    });
+
+    document.getElementById("save-avatar-settings").onclick = () => {
+      document.getElementById("save-message").textContent = "Settings saved!";
+    };
+  </script>
+</body>
+</html>
