@@ -11,16 +11,100 @@ title: Dashboard
   <link rel="stylesheet" href="https://gummygyaru.github.io/charavault/assets/css/base.css">
   <link rel="stylesheet" href="https://gummygyaru.github.io/charavault/assets/css/themes/fire-vault.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js" defer></script>
+  <style>
+    .vault-layout {
+      display: flex;
+      height: 100vh;
+      font-family: 'Verdana', sans-serif;
+    }
+
+    aside.sidebar {
+      width: 260px;
+      background: linear-gradient(to bottom, #fae3c3, #ffd7a8);
+      padding: 1.5rem;
+      border-right: 2px solid #f8bb74;
+      overflow-y: auto;
+    }
+
+    aside.sidebar h2 {
+      margin-top: 1.5rem;
+      font-size: 1rem;
+      color: #a45e1a;
+      border-bottom: 1px solid #f2b16f;
+      padding-bottom: 0.25rem;
+    }
+
+    aside.sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    aside.sidebar li {
+      margin: 0.4rem 0;
+    }
+
+    aside.sidebar a {
+      display: block;
+      padding: 0.4rem 0.6rem;
+      background: #fff7e6;
+      border-radius: 6px;
+      color: #6c3e14;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    aside.sidebar a:hover {
+      background: #ffe4b8;
+    }
+
+    .header-bar {
+      padding: 1rem 1.5rem;
+      background: #fff4e0;
+      border-bottom: 1px solid #e8c8a0;
+    }
+
+    .header-bar h1 {
+      font-size: 1.4rem;
+      margin: 0;
+    }
+
+    .vault {
+      color: #ff8800;
+    }
+
+    .content-panel {
+      flex: 1;
+      background: #fffefc;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      margin: 1.5rem 0 0.5rem;
+      padding: 0 2rem;
+    }
+
+    .info-box {
+      background: #fff9ee;
+      border: 1px solid #f3dab9;
+      border-radius: 8px;
+      margin: 0 2rem 2rem;
+      padding: 1rem;
+    }
+
+    .info-box p {
+      margin: 0.5rem 0;
+    }
+  </style>
 </head>
 <body>
 
-  <header>
-    <h1>chara.<span class="vault">vault</span></h1>
-    <div id="usernameDisplay">Loading…</div>
-  </header>
+  <div class="vault-layout">
+    <aside class="sidebar">
+      <h1 class="logo">🐉 chara.<span class="vault">vault</span></h1>
 
-  <div class="dashboard">
-    <aside>
       <h2>Profile</h2>
       <ul>
         <li><a href="#settings" data-page="settings">Settings</a></li>
@@ -48,14 +132,20 @@ title: Dashboard
       </ul>
     </aside>
 
-    <main id="main-content">
-      <div class="section-title">Welcome to your Dashboard</div>
-      <div class="info-box">
-        <p><strong>Username:</strong> <span id="username">Loading...</span></p>
-        <p><strong>Email:</strong> <span id="email">Loading...</span></p>
-        <p><strong>Last Login:</strong> <span id="lastLogin">Loading...</span></p>
+    <div class="content-panel">
+      <div class="header-bar">
+        <h1>Welcome back, <span id="usernameDisplay">Loading…</span></h1>
       </div>
-    </main>
+
+      <main id="main-content">
+        <div class="section-title">Dashboard Overview</div>
+        <div class="info-box">
+          <p><strong>Username:</strong> <span id="username">Loading...</span></p>
+          <p><strong>Email:</strong> <span id="email">Loading...</span></p>
+          <p><strong>Last Login:</strong> <span id="lastLogin">Loading...</span></p>
+        </div>
+      </main>
+    </div>
   </div>
 
   <script type="module">
@@ -83,8 +173,9 @@ title: Dashboard
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        usernameDisplay.textContent = user.displayName || user.email || "User";
-        usernameSpan.textContent = user.displayName || "Unknown";
+        const name = user.displayName || user.email || "User";
+        usernameDisplay.textContent = name;
+        usernameSpan.textContent = name;
         emailSpan.textContent = user.email || "Unknown";
         lastLoginSpan.textContent = user.metadata.lastSignInTime || "Unknown";
       } else {
@@ -95,20 +186,13 @@ title: Dashboard
     const mainContent = document.getElementById("main-content");
 
     async function loadPage(page) {
-      mainContent.innerHTML = "<p>Loading...</p>";
+      mainContent.innerHTML = "<p>Loading Tobie magic…</p>";
       try {
         const response = await fetch(`https://gummygyaru.github.io/charavault/dashboard/${page}.html`);
         if (!response.ok) throw new Error("Page not found");
         const html = await response.text();
         mainContent.innerHTML = html;
         document.title = `${page.replace(/-/g, ' ')} | Dashboard`;
-
-        if (page === "profile-content") {
-          window.updatePreview = function () {
-            const htmlContent = document.getElementById("profile-html").value;
-            document.getElementById("profile-preview").innerHTML = htmlContent;
-          };
-        }
       } catch (err) {
         mainContent.innerHTML = `<h2>Error loading page</h2><p>${err.message}</p>`;
       }
@@ -133,6 +217,5 @@ title: Dashboard
     const initialPage = window.location.hash.substring(1);
     if (initialPage) loadPage(initialPage);
   </script>
-
 </body>
 </html>
