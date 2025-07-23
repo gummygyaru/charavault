@@ -1,35 +1,153 @@
-const characterSettingsHTML = `
-    <div class="character-settings-container">
-        <h1>Character Management</h1>
-        <p>These settings apply to your character uploads and design defaults.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Character Settings | chara.vault</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/assets/css/base.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+  <script src="/assets/js/firebase-init.js" defer></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+      background: var(--bg, #f9f9f9);
+      color: var(--text, #222);
+    }
 
-        <label for="design-tos">Global Design Terms of Use</label>
-        <textarea id="design-tos" placeholder="Enter your design TOS in HTML..."></textarea>
+    .character-settings-container {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
 
-        <label for="default-privacy">Default Character Privacy</label>
-        <select id="default-privacy">
-            <option value="private">Private</option>
-            <option value="public">Public</option>
-            <option value="key">Key Only</option>
-        </select>
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
 
-        <label for="default-listing">Default Character Listing</label>
-        <select id="default-listing">
-            <option value="private">Private</option>
-            <option value="public">Public</option>
-            <option value="key">Key Only</option>
-        </select>
+    label {
+      display: block;
+      margin-top: 1.5rem;
+      font-weight: bold;
+    }
 
-        <label>Default Design Tradeability</label>
-        <div style="margin-bottom: 1rem;">
-            <div><input type="checkbox" id="tradeable" /> <label for="tradeable">Tradeable</label></div>
-            <div><input type="checkbox" id="sellable" /> <label for="sellable">Sellable</label></div>
-            <div><input type="checkbox" id="giftable" /> <label for="giftable">Giftable</label></div>
-        </div>
+    textarea, select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      font-family: inherit;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
 
-        <button class="btn-save" id="save-character-settings">Save Settings</button>
-        <div id="char-settings-message"></div>
-        </div>
-      </div>
-    `;
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
 
+    .checkbox-group div {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-save {
+      margin-top: 2rem;
+      background-color: #9333ea;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .btn-save:hover {
+      background-color: #7e22ce;
+    }
+
+    #char-settings-message {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="character-settings-container">
+    <h1>Character Management</h1>
+    <p>These settings apply to your character uploads and design defaults.</p>
+
+    <label for="design-tos">Global Design Terms of Use</label>
+    <textarea id="design-tos" placeholder="Enter your design TOS in HTML..." rows="6"></textarea>
+
+    <label for="default-privacy">Default Character Privacy</label>
+    <select id="default-privacy">
+      <option value="private">Private</option>
+      <option value="public">Public</option>
+      <option value="key">Key Only</option>
+    </select>
+
+    <label for="default-listing">Default Character Listing</label>
+    <select id="default-listing">
+      <option value="private">Private</option>
+      <option value="public">Public</option>
+      <option value="key">Key Only</option>
+    </select>
+
+    <label>Default Design Tradeability</label>
+    <div class="checkbox-group">
+      <div><input type="checkbox" id="tradeable" /> <label for="tradeable">Tradeable</label></div>
+      <div><input type="checkbox" id="sellable" /> <label for="sellable">Sellable</label></div>
+      <div><input type="checkbox" id="giftable" /> <label for="giftable">Giftable</label></div>
+    </div>
+
+    <button class="btn-save" id="save-character-settings">Save Settings</button>
+    <div id="char-settings-message"></div>
+  </div>
+
+  <script>
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    let currentUser;
+
+    auth.onAuthStateChanged(async user => {
+      if (user) {
+        currentUser = user;
+        const doc = await db.collection("users").doc(user.uid).get();
+        const data = doc.data() || {};
+
+        document.getElementById("design-tos").value = data.designTOS || "";
+        document.getElementById("default-privacy").value = data.defaultPrivacy || "private";
+        document.getElementById("default-listing").value = data.defaultListing || "private";
+        document.getElementById("tradeable").checked = !!data.tradeable;
+        document.getElementById("sellable").checked = !!data.sellable;
+        document.getElementById("giftable").checked = !!data.giftable;
+      }
+    });
+
+    document.getElementById("save-character-settings").onclick = async () => {
+      const settings = {
+        designTOS: document.getElementById("design-tos").value,
+        defaultPrivacy: document.getElementById("default-privacy").value,
+        defaultListing: document.getElementById("default-listing").value,
+        tradeable: document.getElementById("tradeable").checked,
+        sellable: document.getElementById("sellable").checked,
+        giftable: document.getElementById("giftable").checked,
+      };
+
+      await db.collection("users").doc(currentUser.uid).set(settings, { merge: true });
+      document.getElementById("char-settings-message").textContent = "Settings saved!";
+    };
+  </script>
+</body>
+</html>
