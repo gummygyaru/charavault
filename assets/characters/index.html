@@ -1,1 +1,32 @@
+---
+layout: manage
+title: Character Dashboard
+header_title: Your Character Vault
+---
+
+<section id="dashboard-welcome" class="manage-panel active" role="main" aria-label="Welcome to your character vault">
+  <h2>Welcome to Your Character Vault</h2>
+  <p>Manage your characters, images, ownership, and more with ease.</p>
+
+  <nav aria-label="Character management quick links">
+    <ul>
+      <li><a href="#settings" onclick="activatePanel('settings'); return false;">Character Settings</a></li>
+      <li><a href="#transfer" onclick="activatePanel('transfer'); return false;">Transfer Character</a></li>
+      <li><a href="#warnings" onclick="activatePanel('warnings'); return false;">Character Warnings</a></li>
+      <li><a href="#images" onclick="activatePanel('images'); return false;">Image Management</a></li>
+    </ul>
+  </nav>
+</section>
+
+<script>
+  // Make activatePanel function globally accessible for quick links
+  function activatePanel(panelId) {
+    document.querySelectorAll('.manage-panel').forEach(panel => {
+      panel.classList.toggle('active', panel.id === panelId);
+    });
+    document.querySelectorAll('.manage-sidebar button[data-panel]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.panel === panelId);
+    });
+  }
+</script>
 
