@@ -1,54 +1,54 @@
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom, #2b1a0e, #1a0f05);
-  color: #fff3e6;
+  background: linear-gradient(to bottom, #fff5f0, #ffece2);
+  color: #5c3a2b;
   margin: 0;
   padding: 0;
   text-align: center;
-  animation: flickerBackground 10s infinite alternate;
+  animation: pastelGlow 12s infinite alternate;
 }
 
-@keyframes flickerBackground {
-  0% { background-color: #1a0f05; }
-  50% { background-color: #2b1a0e; }
-  100% { background-color: #1a0f05; }
+@keyframes pastelGlow {
+  0% { background-color: #fff0ea; }
+  50% { background-color: #ffe6d6; }
+  100% { background-color: #fff0ea; }
 }
 
 header {
-  background: linear-gradient(to right, #5a2e0f, #c1440e);
+  background: linear-gradient(to right, #ffd6b8, #ffc6b3);
   padding: 2rem 1rem;
-  border-bottom: 2px solid #8b3a08;
-  color: #ffeedd;
-  box-shadow: 0 0 20px rgba(255, 85, 0, 0.4);
+  border-bottom: 2px solid #ffb89f;
+  color: #5c2a1a;
+  box-shadow: 0 0 15px rgba(255, 192, 128, 0.4);
 }
 
 .vault {
-  color: #ff884d;
-  text-shadow: 0 0 5px #ff4500, 0 0 10px #ffa500;
+  color: #ff927f;
+  text-shadow: 0 0 4px #ffcab3, 0 0 8px #ffcfb8;
   font-weight: bold;
   font-size: 2rem;
-  animation: glowText 2s ease-in-out infinite alternate;
+  animation: glowText 2.5s ease-in-out infinite alternate;
 }
 
 @keyframes glowText {
-  0% { text-shadow: 0 0 5px #ff4500; }
-  100% { text-shadow: 0 0 20px #ffae42; }
+  0% { text-shadow: 0 0 6px #ffbfa2; }
+  100% { text-shadow: 0 0 12px #ffe1d1; }
 }
 
 .character-card {
-  background: linear-gradient(to bottom right, #3b1f0e, #1c0d05);
+  background: linear-gradient(to bottom right, #fff3ee, #ffe4d9);
   margin: 2rem auto;
   padding: 1.5rem;
   width: 300px;
-  border: 1px solid #a7522b;
+  border: 1px solid #ffc7b0;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(255, 120, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 182, 155, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .character-card:hover {
   transform: scale(1.03);
-  box-shadow: 0 0 20px rgba(255, 120, 0, 0.4);
+  box-shadow: 0 0 18px rgba(255, 182, 155, 0.4);
 }
 
 img {
@@ -56,24 +56,24 @@ img {
   width: 200px;
   height: 200px;
   object-fit: cover;
-  border: 2px solid #ff6600;
+  border: 2px solid #ffb3a3;
 }
 
 button {
-  background: linear-gradient(to right, #ff6600, #cc3300);
+  background: linear-gradient(to right, #ffd1b8, #ffb8a3);
   border: none;
-  color: white;
+  color: #5c2a1a;
   padding: 0.75rem 1.5rem;
   margin: 1rem;
   font-size: 1rem;
   border-radius: 6px;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(255, 69, 0, 0.4);
+  box-shadow: 0 0 10px rgba(255, 180, 140, 0.4);
   transition: background 0.3s, transform 0.2s;
 }
 
 button:hover {
-  background: linear-gradient(to right, #ff944d, #ff4500);
+  background: linear-gradient(to right, #ffe2d1, #ffc1ae);
   transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(255, 140, 0, 0.6);
+  box-shadow: 0 0 14px rgba(255, 185, 150, 0.5);
 }
