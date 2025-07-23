@@ -1,1 +1,60 @@
+---
+layout: manage
+title: Manage Character
+header_title: Manage Character
+---
+
+<section id="settings" class="manage-panel active" role="tabpanel" aria-label="Character Settings">
+  <h2>Character Settings</h2>
+  <form id="character-settings-form">
+    <label for="avatar-upload">Avatar Upload (200x200 PNG/JPEG/GIF)</label>
+    <input type="file" id="avatar-upload" accept=".png,.jpg,.jpeg,.gif" />
+    
+    <label for="character-html">Character HTML Blurb</label>
+    <textarea id="character-html" rows="8" placeholder="Enter your character's description or HTML here"></textarea>
+    
+    <button type="submit">Save Settings</button>
+  </form>
+</section>
+
+<section id="transfer" class="manage-panel" role="tabpanel" aria-label="Transfer Character">
+  <h2>Transfer Character</h2>
+  <form id="transfer-form">
+    <label for="recipient-username">Recipient's Username</label>
+    <input type="text" id="recipient-username" required placeholder="Enter username" />
+    
+    <label for="transfer-reason">Reason</label>
+    <input type="text" id="transfer-reason" placeholder="e.g., gift, sale, trade" />
+    
+    <button type="submit">Initiate Transfer</button>
+  </form>
+</section>
+
+<section id="warnings" class="manage-panel" role="tabpanel" aria-label="Character Warnings">
+  <h2>Character Warnings</h2>
+  <form id="warnings-form">
+    <fieldset>
+      <legend>Select all applicable warnings</legend>
+      <label><input type="checkbox" name="warnings" value="body-horror" /> Body Horror</label>
+      <label><input type="checkbox" name="warnings" value="nsfw" /> NSFW</label>
+      <label><input type="checkbox" name="warnings" value="abuse" /> Abuse</label>
+      <label><input type="checkbox" name="warnings" value="violence" /> Violence</label>
+      <!-- Add more as needed -->
+    </fieldset>
+    <button type="submit">Save Warnings</button>
+  </form>
+</section>
+
+<section id="images" class="manage-panel" role="tabpanel" aria-label="Image Management">
+  <h2>Image Management</h2>
+  <form id="upload-images-form" enctype="multipart/form-data">
+    <label for="upload-images">Upload Image(s)</label>
+    <input type="file" id="upload-images" accept="image/*" multiple />
+    <button type="submit">Upload</button>
+  </form>
+
+  <div id="manage-images-list">
+    <!-- Dynamically populated gallery of images with privacy and watermark controls -->
+  </div>
+</section>
 
