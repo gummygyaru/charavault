@@ -45,8 +45,25 @@ async function loadUserProfile() {
   if (data.commentPermission !== "disabled") {
     loadComments(username);
   }
+
+  // Add placeholder sections for smooth anchor scrolling
+  const sections = [
+    "bulletin", "characters", "worlds", "hoard",
+    "stories", "art", "designs", "comments"
+  ];
+  const main = document.querySelector(".profile-main");
+
+  sections.forEach(id => {
+    if (!document.getElementById(id)) {
+      const section = document.createElement("section");
+      section.id = id;
+      section.innerHTML = `<h3>${id.charAt(0).toUpperCase() + id.slice(1)}</h3><p>Loading or not available.</p>`;
+      main.appendChild(section);
+    }
+  });
 }
 
+// Load comment data from Firestore
 async function loadComments(username) {
   const q = query(collection(db, "comments"), where("recipient", "==", username));
   const querySnapshot = await getDocs(q);
@@ -68,5 +85,19 @@ async function loadComments(username) {
     container.appendChild(el);
   });
 }
+
+// Enable smooth scrolling for sidebar nav
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".profile-sidebar a[href^='#']").forEach(anchor => {
+    anchor.addEventListener("click", function (e) {
+      e.preventDefault();
+      const targetId = this.getAttribute("href").substring(1);
+      const target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
+});
 
 loadUserProfile();
