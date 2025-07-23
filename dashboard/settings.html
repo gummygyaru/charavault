@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Settings | Dashboard</title>
   <link rel="stylesheet" href="https://gummygyaru.github.io/charavault/assets/css/base.css" />
-  <!-- Theme CSS will be dynamically injected here -->
+  <link id="theme-link" rel="stylesheet" href="" />
   <script type="module">
     import { getAuth, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, updateEmail } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
@@ -35,16 +35,11 @@
     };
 
     function applyTheme(themeName) {
-      let linkTag = document.getElementById("theme-link");
-      if (!linkTag) {
-        linkTag = document.createElement("link");
-        linkTag.rel = "stylesheet";
-        linkTag.id = "theme-link";
-        document.head.appendChild(linkTag);
+      const themeLink = document.getElementById("theme-link");
+      if (themeMap[themeName]) {
+        themeLink.href = themeMap[themeName];
+        localStorage.setItem("selectedTheme", themeName);
       }
-      linkTag.href = themeMap[themeName] || themeMap["Fire Vault"];
-      if ($("site-theme")) $("site-theme").value = themeName;
-      localStorage.setItem("selectedTheme", themeName);
     }
 
     onAuthStateChanged(auth, async (user) => {
@@ -63,6 +58,7 @@
         if (data.customCSS) $("custom-css").value = data.customCSS;
         if (data.avatarURL) $("avatar-preview").src = data.avatarURL;
       }
+
       $("email-input").value = user.email;
 
       $("avatar").addEventListener("change", (e) => {
@@ -77,7 +73,6 @@
       $("site-theme").addEventListener("change", async (e) => {
         const newTheme = e.target.value;
         applyTheme(newTheme);
-
         try {
           await setDoc(userRef, { theme: newTheme }, { merge: true });
           $("message").textContent = `Theme changed to ${newTheme}`;
@@ -131,13 +126,6 @@
         }
       });
     });
-
-    window.addEventListener("load", () => {
-      if (!auth.currentUser) {
-        const savedTheme = localStorage.getItem("selectedTheme") || "Fire Vault";
-        applyTheme(savedTheme);
-      }
-    });
   </script>
 </head>
 <body>
@@ -147,7 +135,7 @@
     <input type="file" id="avatar" accept="image/png, image/jpeg, image/gif" /><br />
     <img id="avatar-preview" alt="Avatar Preview" style="max-width:200px; max-height:200px; margin: 1rem 0; border-radius:8px;" />
 
-    <label for="username-input">Username (change once a month only)</label><br />
+    <label for="username-input">Username</label><br />
     <input type="text" id="username-input" placeholder="Your username" style="width:100%; padding:0.5rem; margin-bottom:1rem;" />
 
     <label for="dob">Date of Birth</label><br />
@@ -155,7 +143,7 @@
 
     <label for="email-input">Email</label><br />
     <input type="email" id="email-input" placeholder="Your email" style="width:100%; padding:0.5rem; margin-bottom:0.5rem;" />
-    <button id="change-email-btn" style="margin-bottom:1rem;">Change Email (verification sent)</button><br />
+    <button id="change-email-btn" style="margin-bottom:1rem;">Change Email</button><br />
 
     <label>Password</label><br />
     <button id="reset-password-btn" style="margin-bottom:1rem;">Send Password Reset Email</button><br />
@@ -168,7 +156,7 @@
       <option value="Forest Vault">Forest Vault</option>
     </select>
 
-    <label for="custom-css">Custom Theme CSS (only you see this)</label><br />
+    <label for="custom-css">Custom Theme CSS</label><br />
     <textarea id="custom-css" rows="6" placeholder="Enter your custom CSS here..." style="width:100%; padding:0.5rem; margin-bottom:1rem;"></textarea>
 
     <button id="save-btn" style="padding:0.75rem 1.5rem; font-size:1rem;">Save Settings</button>
