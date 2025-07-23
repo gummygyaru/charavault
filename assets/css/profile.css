@@ -1,0 +1,38 @@
+.profile-container {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.profile-sidebar {
+  flex: 0 0 200px;
+  border-right: 1px solid currentColor;
+}
+
+.profile-sidebar h2 {
+  margin-bottom: 1rem;
+}
+
+.profile-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.profile-sidebar li {
+  margin-bottom: 0.5rem;
+}
+
+.profile-main {
+  flex: 1;
+  padding: 0 1rem;
+}
+
+#user-html {
+  margin-bottom: 2rem;
+}
+
+.profile-comments .comment {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 0.5rem;
+}
