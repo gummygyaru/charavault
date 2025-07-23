@@ -1,0 +1,49 @@
+---
+layout: default
+title: User Profile
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Profile | chara.vault</title>
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/profile.css">
+  <script defer src="/assets/js/profile.js"></script>
+</head>
+<body>
+  <main class="profile-container">
+    <aside class="profile-sidebar">
+      <h2 id="username">@username</h2>
+      <nav>
+        <ul>
+          <li><a href="#bulletin">Vault Notes</a></li>
+          <li><a href="#characters">Characters</a></li>
+          <li><a href="#worlds">Worlds</a></li>
+          <li><a href="#hoard">Your Hoard</a></li>
+          <hr>
+          <li><a href="#stories">Stories</a></li>
+          <li><a href="#art">Art</a></li>
+          <li><a href="#designs">Designs</a></li>
+          <hr>
+          <li><a href="#comments">Comments</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <section class="profile-main">
+      <div id="user-html">
+        <!-- Custom user HTML loaded from Firebase -->
+      </div>
+
+      <section id="comments" class="profile-comments">
+        <h3>Comments</h3>
+        <div id="comment-list">
+          <!-- Loaded comments go here -->
+        </div>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
