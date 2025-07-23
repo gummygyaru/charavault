@@ -1,0 +1,36 @@
+---
+# _layouts/manage.html
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ page.title }} | chara.vault</title>
+  <link rel="stylesheet" href="{{ '/assets/css/base.css' | relative_url }}" />
+  <link rel="stylesheet" href="{{ '/assets/css/manage.css' | relative_url }}" />
+  <script defer src="{{ '/assets/js/manage.js' | relative_url }}"></script>
+</head>
+<body>
+  <header class="manage-header">
+    <h1>{{ page.header_title | default: "Manage Character" }}</h1>
+    <!-- Add global nav, breadcrumbs, profile links etc here if needed -->
+  </header>
+
+  <main class="manage-container">
+    <nav class="manage-sidebar" aria-label="Character management options">
+      <ul>
+        <li><button data-panel="settings" class="active">Character Settings</button></li>
+        <li><button data-panel="transfer">Transfer Character</button></li>
+        <li><button data-panel="warnings">Character Warnings</button></li>
+        <li><button data-panel="images">Image Management</button></li>
+      </ul>
+    </nav>
+
+    <section class="manage-content">
+      {{ content }}
+    </section>
+  </main>
+</body>
+</html>
