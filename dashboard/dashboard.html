@@ -216,6 +216,32 @@ title: Dashboard
 
     const initialPage = window.location.hash.substring(1);
     if (initialPage) loadPage(initialPage);
+
+textarea,
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  background-color: #fffaf0; /* light pastel bg */
+  color: #2c1c0a; /* warm dark text for contrast */
+  border: 1px solid #e0a868;
+  font-family: monospace;
+  padding: 0.5rem;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+textarea::placeholder,
+input::placeholder {
+  color: #a4753c;
+}
+
+textarea:focus,
+input:focus {
+  outline: none;
+  border-color: #ff9944;
+  box-shadow: 0 0 6px rgba(255, 153, 68, 0.4);
+}
   </script>
 </body>
 </html>
