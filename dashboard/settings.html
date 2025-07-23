@@ -1,33 +1,147 @@
-    const settingsPageHTML = `
-      <h2>Account Settings</h2>
-      <label for="avatar">Change Avatar (png, jpeg, gif, max 200x200)</label>
-      <input type="file" id="avatar" accept="image/png, image/jpeg, image/gif" />
-      <img id="avatar-preview" alt="Avatar Preview" />
+<script type="module">
+  import { getAuth, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, updateEmail } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-storage.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 
-      <label for="username">Username (change once a month only)</label>
-      <input type="text" id="username-input" placeholder="Your username" />
+  const firebaseConfig = {
+    apiKey: "AIzaSyDDZvaWl5qwJbvPOHN1pisGwfIN2gkj1Ec",
+    authDomain: "charavault-e8cf5.firebaseapp.com",
+    projectId: "charavault-e8cf5",
+    storageBucket: "charavault-e8cf5.appspot.com",
+    messagingSenderId: "385710051091",
+    appId: "1:385710051091:web:a38d5ac0047ec32a0914e6"
+  };
 
-      <label for="dob">Date of Birth</label>
-      <input type="date" id="dob" />
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
 
-      <label for="email">Email</label>
-      <input type="email" id="email-input" placeholder="Your email" />
-      <button id="change-email-btn">Change Email (verification sent)</button>
+  const $ = (id) => document.getElementById(id);
 
-      <label>Password</label>
-      <button id="reset-password-btn">Send Password Reset Email</button>
+  // Map theme names to their CSS file URLs
+  const themeMap = {
+    "Fire Vault": "https://gummygyaru.github.io/charavault/assets/css/themes/fire-vault.css",
+    "Moon Vault": "https://gummygyaru.github.io/charavault/assets/css/themes/moon-vault.css",
+    "Ocean Vault": "https://gummygyaru.github.io/charavault/assets/css/themes/ocean-vault.css",
+    "Forest Vault": "https://gummygyaru.github.io/charavault/assets/css/themes/forest-vault.css"
+  };
 
-      <label for="site-theme">Site Theme</label>
-      <select id="site-theme">
-        <option value="Fire Vault">Fire Vault</option>
-        <option value="Moon Vault">Moon Vault</option>
-        <option value="Ocean Vault">Ocean Vault</option>
-        <option value="Forest Vault">Forest Vault</option>
-      </select>
+  // Dynamically apply a theme by changing or adding the theme <link>
+  function applyTheme(themeName) {
+    let linkTag = document.getElementById("theme-link");
+    if (!linkTag) {
+      linkTag = document.createElement("link");
+      linkTag.rel = "stylesheet";
+      linkTag.id = "theme-link";
+      document.head.appendChild(linkTag);
+    }
+    linkTag.href = themeMap[themeName] || themeMap["Fire Vault"];
+    // Also update the select dropdown value so UI matches
+    if ($("site-theme")) $("site-theme").value = themeName;
+    // Save in localStorage for quick reloads
+    localStorage.setItem("selectedTheme", themeName);
+  }
 
-      <label for="custom-css">Custom Theme CSS (only you see this)</label>
-      <textarea id="custom-css" rows="6" placeholder="Enter your custom CSS here..."></textarea>
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return window.location.href = "/login.html";
 
-      <button id="save-btn">Save Settings</button>
-      <div id="message"></div>
-    `;
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
+
+    // Load saved theme from Firestore or fallback to localStorage or default
+    const savedTheme = (snap.exists() && snap.data().theme) || localStorage.getItem("selectedTheme") || "Fire Vault";
+    applyTheme(savedTheme);
+
+    // Pre-fill other fields
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data.username) $("username-input").value = data.username;
+      if (data.dob) $("dob").value = data.dob;
+      if (data.customCSS) $("custom-css").value = data.customCSS;
+      if (data.avatarURL) $("avatar-preview").src = data.avatarURL;
+    }
+    $("email-input").value = user.email;
+
+    // Avatar preview
+    $("avatar").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => $("avatar-preview").src = reader.result;
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // When theme changes from dropdown, immediately apply and save to Firestore + localStorage
+    $("site-theme").addEventListener("change", async (e) => {
+      const newTheme = e.target.value;
+      applyTheme(newTheme);
+
+      try {
+        await setDoc(userRef, { theme: newTheme }, { merge: true });
+        $("message").textContent = `Theme changed to ${newTheme}`;
+      } catch (err) {
+        $("message").textContent = `Failed to save theme: ${err.message}`;
+      }
+    });
+
+    // Save Button saves other fields + avatar
+    $("save-btn").addEventListener("click", async () => {
+      $("message").textContent = "Saving...";
+      const username = $("username-input").value.trim();
+      const dob = $("dob").value;
+      const theme = $("site-theme").value; // Keep theme in sync
+      const customCSS = $("custom-css").value;
+
+      const dataToUpdate = { username, dob, theme, customCSS };
+
+      try {
+        // Upload avatar if new file selected
+        const file = $("avatar").files[0];
+        if (file) {
+          const storageRef = ref(storage, `avatars/${user.uid}`);
+          await uploadBytes(storageRef, file);
+          const url = await getDownloadURL(storageRef);
+          dataToUpdate.avatarURL = url;
+        }
+
+        await setDoc(userRef, dataToUpdate, { merge: true });
+        $("message").textContent = "Settings saved!";
+      } catch (err) {
+        $("message").textContent = `Error: ${err.message}`;
+      }
+    });
+
+    // Change Email
+    $("change-email-btn").addEventListener("click", async () => {
+      try {
+        const newEmail = $("email-input").value.trim();
+        await updateEmail(user, newEmail);
+        await sendEmailVerification(user);
+        $("message").textContent = "Email updated. Verification sent.";
+      } catch (err) {
+        $("message").textContent = `Email change failed: ${err.message}`;
+      }
+    });
+
+    // Reset Password
+    $("reset-password-btn").addEventListener("click", async () => {
+      try {
+        await sendPasswordResetEmail(auth, user.email);
+        $("message").textContent = "Password reset email sent.";
+      } catch (err) {
+        $("message").textContent = `Reset failed: ${err.message}`;
+      }
+    });
+  });
+
+  // On page load, apply theme from localStorage if no firebase user is logged in yet
+  window.addEventListener("load", () => {
+    if (!auth.currentUser) {
+      const savedTheme = localStorage.getItem("selectedTheme") || "Fire Vault";
+      applyTheme(savedTheme);
+    }
+  });
+</script>
